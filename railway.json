@@ -1,0 +1,45 @@
+{
+  "$schema": "https://railway.app/schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "nixpacksPlan": {
+      "providers": ["python"],
+      "python": {
+        "version": "3.11"
+      }
+    }
+  },
+  "deploy": {
+    "startCommand": "uvicorn app.main:app --host 0.0.0.0 --port $PORT",
+    "healthcheckPath": "/api/v1/health",
+    "healthcheckTimeout": 60
+  },
+  "env": {
+    "DATABASE_URL": {
+      "description": "PostgreSQL connection string"
+    },
+    "CHROMA_HOST": {
+      "description": "ChromaDB server URL"
+    },
+    "GEMINI_API_KEY": {
+      "description": "Google Gemini API key"
+    },
+    "CLERK_PUBLISHABLE_KEY": {
+      "description": "Clerk publishable key"
+    },
+    "CLERK_SECRET_KEY": {
+      "description": "Clerk secret key"
+    },
+    "JSEARCH_API_KEY": {
+      "description": "RapidAPI JSearch key"
+    },
+    "JSEARCH_API_HOST": {
+      "description": "RapidAPI JSearch host"
+    }
+  },
+  "databases": {
+    "postgres_db": {
+      "description": "PostgreSQL database for user data and applications"
+    }
+  }
+}

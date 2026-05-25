@@ -1,0 +1,43 @@
+# Web Framework
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+python-multipart==0.0.9
+
+# Database
+asyncpg==0.29.0
+sqlalchemy[asyncio]==2.0.35
+alembic==1.13.3
+psycopg2-binary==2.9.9
+
+# AI & RAG
+langchain==0.3.7
+langchain-google-genai==1.0.7
+langchain-community==0.3.5
+langchain-core==0.3.18
+chromadb==0.5.5
+chromadb-hnsw==0.1.0
+embeddings==0.0.2
+
+# CV Parsing
+pymupdf==1.25.1
+python-docx==1.1.2
+
+# Job API
+httpx==0.27.2
+
+# Auth
+clerk-sdk-python==0.3.4
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# Utils
+python-dotenv==1.0.1
+pydantic==2.9.2
+pydantic-settings==2.5.2
+aiofiles==24.1.0
+pillow==10.4.0
+
+# Dev
+pytest==8.3.3
+pytest-asyncio==0.24.0
+httpx==0.27.2
