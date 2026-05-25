@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { ClerkProvider } from '@clerk/nextjs'
+import { shadcn } from '@clerk/ui/themes'
 import { Toaster } from 'sonner'
 import './globals.css'
 
@@ -14,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <ClerkProvider>
+    <ClerkProvider appearance={{ theme: shadcn }}>
       <html lang="en">
         <body className="min-h-screen bg-background font-sans antialiased">
           {children}

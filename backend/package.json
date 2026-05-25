@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@clerk/nextjs": "^7.4.1",
+    "@google/generative-ai": "^0.24.1"
+  }
+}

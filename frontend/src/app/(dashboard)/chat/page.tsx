@@ -56,9 +56,9 @@ const MessageBubble = ({ message }: { message: ChatMessage }) => {
           </span>
         </div>
         
-        {message.suggested_actions && message.suggested_actions.length > 0 && (
+        {message.suggestedActions && message.suggestedActions.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-2">
-            {message.suggested_actions.map((action, i) => (
+            {message.suggestedActions.map((action, i) => (
               <button 
                 key={i}
                 className={`text-sm px-3 py-1.5 rounded-full transition-colors ${
@@ -119,10 +119,11 @@ export default function ChatPage() {
         role: 'assistant',
         content: responses[Math.floor(Math.random() * responses.length)],
         timestamp: new Date(),
-        suggested_actions: ['Yes, help me', 'Show me more', 'Skip']
+        suggestedActions: ['Yes, help me', 'Show me more', 'Skip']
       }
       
-      setMessages(prev => [...prev, aiMessage])
+      const currentMessages = useChatStore(state => state.messages);
+      setMessages([...currentMessages, aiMessage]);
       setLoading(false)
     }, 1500)
   }
