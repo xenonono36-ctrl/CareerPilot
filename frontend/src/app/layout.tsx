@@ -6,7 +6,7 @@ import { Compass } from 'lucide-react'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'CareerPilot - AI Career Co-Pilot',
+  title: 'CareerPilot - AI-Powered Career Assistant',
   description: 'Your AI-powered career assistant for job search, CV optimization, and interview preparation',
 }
 
@@ -18,28 +18,58 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" className="scroll-smooth">
-        <body className="min-h-screen bg-obsidian text-slate-100 font-sans antialiased overflow-x-hidden glow-bg-1">
+        <head>
+          {/* Custom injection layer for advanced sci-fi scanning & smooth rotation mechanics */}
+          <style>{`
+            @keyframes smooth-spin {
+              from { transform: rotate(0deg); }
+              to { transform: rotate(360deg); }
+            }
+            @keyframes pulse-scan {
+              0%, 100% { opacity: 0.3; transform: scale(1); }
+              50% { opacity: 0.6; transform: scale(1.02); }
+            }
+            .animate-spin-slow {
+              animation: smooth-spin 25s linear infinite !important;
+            }
+            .animate-pulse-scan {
+              animation: pulse-scan 8s ease-in-out infinite;
+            }
+            .cyber-grid {
+              background-image: 
+                linear-gradient(to right, rgba(6, 182, 212, 0.04) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(6, 182, 212, 0.04) 1px, transparent 1px);
+              background-size: 40px 40px;
+            }
+          `}</style>
+        </head>
+        <body className="bg-[#030712] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-white overflow-x-hidden min-h-screen antialiased relative">
           
-          {/* STICKY HEADER */}
-          <header className="sticky top-0 z-50 backdrop-blur-md bg-obsidian/70 border-b border-slate-800/60 transition-all duration-300">
+          {/* Background Cyber Grid Matrix & Radial Plasma Glow */}
+          <div className="absolute inset-0 cyber-grid pointer-events-none -z-20" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[700px] bg-[radial-gradient(circle_at_50%_-10%,rgba(6,182,212,0.15)_0%,rgba(139,92,246,0.05)_45%,transparent 70%)] pointer-events-none -z-10 animate-pulse-scan" />
+
+          {/* STICKY SCI-FI HEADER */}
+          <header className="sticky top-0 z-50 backdrop-blur-xl bg-[#030712]/60 border-b border-cyan-500/10 transition-all duration-300">
             <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
               
-              {/* Logo / Brand */}
+              {/* Brand Core */}
               <Link href="/" className="flex items-center gap-3 group">
-                <div className="p-2 bg-gradient-to-br from-neonCyan to-neonIndigo rounded-xl shadow-[0_0_15px_rgba(6,182,212,0.4)]">
+                <div className="p-2 bg-gradient-to-br from-cyan-500 via-cyan-400 to-indigo-500 rounded-xl shadow-[0_0_20px_rgba(6,182,212,0.35)] flex items-center justify-center border border-cyan-400/20">
                   <Compass className="w-6 h-6 text-white animate-spin-slow" />
                 </div>
-                <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+                <span className="text-xl font-bold tracking-wider bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent uppercase font-mono">
                   CareerPilot
                 </span>
               </Link>
               
-              {/* Actions */}
+              {/* Actions / Terminal Controls */}
               <div className="flex items-center gap-6">
-                <Link href="/sign-in" className="text-sm font-medium text-slate-400 hover:text-white transition-colors">
-                  Sign In
+                <Link href="/sign-in" className="text-sm font-semibold text-slate-400 hover:text-cyan-400 transition-colors tracking-wide">
+                  SIGN IN
                 </Link>
-                <Link href="/sign-up" className="relative group overflow-hidden px-5 py-2.5 rounded-xl bg-gradient-to-r from-neonCyan to-neonIndigo text-sm font-semibold text-white shadow-[0_0_20px_rgba(6,182,212,0.3)] transition-all duration-300 hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] hover:scale-[1.02]">
+                <Link href="/sign-up" className="relative group overflow-hidden px-5 py-2.5 rounded-lg border border-cyan-400/30 bg-gradient-to-r from-cyan-950/40 to-indigo-950/40 text-sm font-bold text-cyan-400 tracking-wider uppercase transition-all duration-300 hover:shadow-[0_0_25px_rgba(6,182,212,0.4)] hover:border-cyan-400/60 hover:scale-[1.02]">
+                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-cyan-500/10 to-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                   Get Started
                 </Link>
               </div>
@@ -47,25 +77,24 @@ export default function RootLayout({
             </div>
           </header>
 
-          {/* PAGE INNER CONTENT */}
+          {/* APP INTERACTIVE SURFACE */}
           <main>
             {children}
           </main>
 
-          {/* FOOTER */}
-          <footer className="border-t border-slate-900 bg-black/30 text-slate-500 mt-20">
-            <div className="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row items-center justify-between gap-6 text-sm">
-              <div className="flex items-center gap-2">
-                <Compass className="w-5 h-5 text-slate-400" />
-                <span className="font-bold text-slate-300 tracking-tight">CareerPilot</span>
+          {/* MATRIX COMPLIANT FOOTER */}
+          <footer className="border-t border-cyan-500/5 bg-[#010409]/80 text-slate-600 mt-24">
+            <div className="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row items-center justify-between gap-6 text-xs font-mono tracking-widest">
+              <div className="flex items-center gap-2 text-slate-400">
+                <Compass className="w-4 h-4 text-cyan-500/60 animate-pulse" />
+                <span>CAREERPILOT</span>
               </div>
               <div>
-                &copy; 2026 CareerPilot. AI-powered career success.
+                &copy; 2026 CAREERPILOT.
               </div>
             </div>
           </footer>
 
-          {/* NOTIFICATIONS CONTAINER */}
           <Toaster position="top-right" richColors />
           
         </body>
