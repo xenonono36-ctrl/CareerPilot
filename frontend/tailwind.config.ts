@@ -10,6 +10,14 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // --- YOUR CUSTOM DESIGN SYSTEM COLORS ---
+        obsidian: '#090d16',
+        cardDark: 'rgba(15, 23, 42, 0.65)',
+        neonCyan: '#06b6d4',
+        neonPurple: '#a855f7',
+        neonIndigo: '#6366f1',
+
+        // --- SHADCN / UI THEME SYSTEM ---
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
@@ -68,6 +76,10 @@ const config: Config = {
         },
       },
       animation: {
+        // --- YOUR CUSTOM ANIMATION ---
+        'spin-slow': 'spin 8s linear infinite',
+        
+        // --- SHADCN / UI ANIMATIONS ---
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'slide-in-right': 'slide-in-from-right 0.3s ease-out',
