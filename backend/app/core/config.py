@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     gemini_api_key: str = ""
 
     # Clerk Auth
+    clerk_publishable_key: str = ""
     clerk_secret_key: str = ""
     clerk_verify_token: str = ""
 
@@ -36,6 +37,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = False
+        extra = "ignore"
 
 
 @lru_cache()

@@ -250,7 +250,8 @@ Please generate the complete cover letter:
         missing = []
         
         for req in requirements_lower:
-req in skill
+            matches = [
+                skill
                 for skill in user_skills_lower
                 if any(req in skill for skill in user_skills_lower)
             ]

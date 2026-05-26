@@ -19,17 +19,13 @@ services:
       retries: 5
 
   chroma:
-    image: ghcr.io/chroma-core/chroma:0.4.15
+    image: chromadb/chroma:latest
     container_name: careerpilot-chroma
     ports:
-      - "8000:8000"
+      - "8001:8000"
     volumes:
       - chroma_data:/chroma/chroma
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+
 
   backend:
     build:
@@ -50,7 +46,7 @@ services:
       postgres:
         condition: service_healthy
       chroma:
-        condition: service_healthy
+        condition: service_started
     restart: unless-stopped
 
 volumes:
