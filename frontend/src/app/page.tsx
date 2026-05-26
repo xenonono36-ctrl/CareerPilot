@@ -1,3 +1,6 @@
+'use client';
+
+import React, { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { 
   FileText, 
@@ -12,9 +15,43 @@ import {
 } from 'lucide-react'
 
 export default function Home() {
+  const dotRef = useRef<HTMLDivElement>(null);
+
+  // High-performance, zero-latency custom cursor tracking
+  useEffect(() => {
+    const dot = dotRef.current;
+    if (!dot) return;
+
+    const mouse = { x: 0, y: 0 };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+      
+      dot.style.transform = `translate3d(${mouse.x}px, ${mouse.y}px, 0)`;
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, []);
+
   return (
     <div className="relative max-w-7xl mx-auto px-6">
       
+      {/* AERUKART GENUINE CURSOR EMULATION */}
+      <style dangerouslySetInnerHTML={{__html: `
+        body, a, button, [role="button"] { cursor: none !important; }
+      `}} />
+      
+      {/* 1. Single Enhanced Precision Node with Cyan Neon Glow Bloom */}
+      <div 
+        ref={dotRef} 
+        className="fixed top-0 left-0 w-4 h-4 bg-cyan-400 rounded-full pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 shadow-[0_0_10px_#22d3ee,0_0_20px_#06b6d4,0_0_30px_rgba(6,182,212,0.6)] will-change-transform" 
+      />
+
       {/* INTRO SPECTRUM / HERO GRID HERO */}
       <section className="pt-24 pb-16 text-center relative max-w-4xl mx-auto">
         
@@ -87,9 +124,6 @@ export default function Home() {
       {/* BENCHMARK HUD FEATURES MODULE MATRIX */}
       <section className="py-16 relative">
         <div className="text-center mb-20 space-y-3">
-          <div className="text-xs font-mono font-bold tracking-widest text-indigo-400 uppercase">
-          
-          </div>
           <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white font-sans">
             AI Core Architecture
           </h2>
@@ -134,21 +168,24 @@ export default function Home() {
           </div>
 
           {/* Card 4 */}
-          <div className="group relative rounded-2xl bg-[#090d16]/40 border border-cyan-500/10 p-8 md:p-10 transition-all duration-300 hover:border-emerald-500/30 hover:shadow-[0_0_30px_rgba(16,185,129,0.05)] hover:-translate-y-1 backdrop-blur-md">
-            <div className="w-12 h-12 rounded-xl bg-emerald-950/40 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-6 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
-              <CheckSquare className="w-5 h-5" />
-            </div>
-            <h3 className="text-lg font-bold text-white mb-3 group-hover:text-emerald-400 transition-colors font-mono tracking-tight">Task Tracker</h3>
-            <p className="text-slate-400 leading-relaxed text-sm md:text-base font-medium">
-              Keep critical communication checkpoints under active automated review. Manage interview schedules and optimize follow-up triggers without leaving the terminal.
-            </p>
-          </div>
+<div className="group relative rounded-2xl bg-[#090d16]/40 border border-emerald-500/30 p-8 md:p-10 transition-all duration-300 hover:shadow-[0_0_30px_rgba(16,185,129,0.05)] hover:-translate-y-1 backdrop-blur-md">
+  <div className="w-12 h-12 rounded-xl bg-emerald-950/40 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-6 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+    <CheckSquare className="w-5 h-5" />
+  </div>
+  <h3 className="text-lg font-bold text-white mb-3 group-hover:text-emerald-400 transition-colors font-mono tracking-tight">Task Tracker</h3>
+  <p className="text-slate-400 leading-relaxed text-sm md:text-base font-medium">
+    Keep critical communication checkpoints under active automated review. Manage interview schedules and optimize follow-up triggers without leaving the terminal.
+  </p>
+</div>
 
         </div>
       </section>
 
-      {/* CORE SYNC CALL TO ACTION ACCELERATOR */}
+      {/* CORE SYNC CALL TO ACTION ACCELERATOR (Clean Container + Aerukart Glow Button) */}
       <section className="py-16 relative">
+        <div className="absolute top-full left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-cyan-500/10 blur-[130px] pointer-events-none rounded-full" />
+
+        {/* Main Panel Surface Container */}
         <div className="relative rounded-2xl border border-cyan-500/10 bg-gradient-to-b from-[#060b13]/90 to-black p-12 text-center shadow-[0_20px_50px_rgba(0,0,0,0.8)] overflow-hidden">
           
           {/* Accent lighting dots inside the container panel */}
@@ -160,9 +197,46 @@ export default function Home() {
           <p className="text-slate-400 text-sm md:text-base max-w-lg mx-auto mb-8 font-medium">
             Connect to the primary CareerPilot environment network grid to map and scale your industry trajectory with high-precision AI modules.
           </p>
-          <Link href="/sign-up" className="inline-flex items-center gap-2 px-8 py-4 rounded-lg border border-cyan-400/40 bg-gradient-to-r from-cyan-950/60 to-indigo-950/60 text-xs font-bold font-mono tracking-widest uppercase text-cyan-400 shadow-[0_4px_25px_rgba(6,182,212,0.15)] hover:border-cyan-400/80 hover:scale-[1.01] transition-transform">
-            ESTABLISH CONNECTION <Zap className="w-3.5 h-3.5 fill-cyan-400/20" />
-          </Link>
+          
+          {/* Aerukart Pill Shape & External Glow Setup */}
+          <div className="relative z-20">
+            <Link 
+              href="/sign-up" 
+              className="
+                inline-flex 
+                items-center 
+                gap-2.5 
+                px-10 
+                py-4 
+                rounded-full 
+                text-white 
+                text-xs
+                font-mono
+                font-bold
+                tracking-widest 
+                uppercase 
+                bg-[#005a60]/80
+                backdrop-blur-sm
+                border 
+                border-cyan-400/40
+                transition-all 
+                duration-300
+                
+                /* Aerukart Soft Neon External Glow */
+                shadow-[0_0_25px_rgba(6,182,212,0.45)]
+                
+                /* Hover Adjustments */
+                hover:bg-[#00686f]
+                hover:border-cyan-300/60
+                hover:shadow-[0_0_35px_rgba(6,182,212,0.65)]
+                hover:scale-[1.02]
+                active:scale-[0.98]
+              "
+            >
+              <span>ESTABLISH CONNECTION</span> 
+              <Zap className="w-3.5 h-3.5 fill-cyan-400/20" />
+            </Link>
+          </div>
         </div>
       </section>
 
