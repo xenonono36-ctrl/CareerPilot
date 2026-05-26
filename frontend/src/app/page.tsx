@@ -17,7 +17,7 @@ import {
 export default function Home() {
   const dotRef = useRef<HTMLDivElement>(null);
 
-  // High-performance, zero-latency custom cursor tracking
+  // High-performance, zero-latency custom cursor tracking with active click states
   useEffect(() => {
     const dot = dotRef.current;
     if (!dot) return;
@@ -28,28 +28,95 @@ export default function Home() {
       mouse.x = e.clientX;
       mouse.y = e.clientY;
       
+      // Instant execution: No delay, no lag interpolation
       dot.style.transform = `translate3d(${mouse.x}px, ${mouse.y}px, 0)`;
     };
 
+    const handleMouseDown = () => {
+      dot.classList.add('cursor-active-click');
+    };
+
+    const handleMouseUp = () => {
+      dot.classList.remove('cursor-active-click');
+    };
+
+    const handleMouseOver = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest('a, button, [role="button"]')) {
+        dot.classList.add('cursor-hover-button');
+      }
+    };
+
+    const handleMouseOut = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest('a, button, [role="button"]')) {
+        dot.classList.remove('cursor-hover-button');
+      }
+    };
+
     window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('mouseover', handleMouseOver);
+    window.addEventListener('mouseout', handleMouseOut);
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('mouseover', handleMouseOver);
+      window.removeEventListener('mouseout', handleMouseOut);
     };
   }, []);
 
   return (
     <div className="relative max-w-7xl mx-auto px-6">
       
+      {/* Video Background with Glassmorphism */}
+      <div className="fixed inset-0 -z-10">
+        <video 
+          className="w-full h-full object-cover"
+          autoPlay 
+          muted 
+          loop 
+          playsInline
+          src="/AERUK-BG-ANIM.webm"
+        />
+        <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-3xl" />
+      </div>
+      
       {/* AERUKART GENUINE CURSOR EMULATION */}
       <style dangerouslySetInnerHTML={{__html: `
         body, a, button, [role="button"] { cursor: none !important; }
+        
+        /* Transition timing restricted ONLY to size scales to guarantee 0ms movement lag */
+        .cursor-node {
+          transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease, border 0.2s ease;
+        }
+        
+        /* Active Expanded State: Translucent ring expansion */
+        .cursor-active-click {
+          width: 38px !important;
+          height: 38px !important;
+          background-color: #032d30 !important;
+          border: 1px solid rgba(34, 211, 238, 0.5) !important;
+          box-shadow: 0 0 20px 2px #06b6d4, inset 0 0 10px rgba(6, 182, 212, 0.5) !important;
+        }
+        
+        /* Hover State: Larger with dark cyan fill and light cyan outline */
+        .cursor-hover-button {
+          width: 30px !important;
+          height: 30px !important;
+          background-color: #0d3d42 !important;
+          border: 2px solid #06b6d4 !important;
+          box-shadow: 0 0 12px 3px rgba(6, 182, 212, 0.5), 0 0 25px 6px rgba(6, 182, 212, 0.3) !important;
+        }
       `}} />
       
-      {/* 1. Single Enhanced Precision Node with Cyan Neon Glow Bloom */}
+      {/* 1. Single Custom Dot Node */}
       <div 
         ref={dotRef} 
-        className="fixed top-0 left-0 w-4 h-4 bg-cyan-400 rounded-full pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 shadow-[0_0_10px_#22d3ee,0_0_20px_#06b6d4,0_0_30px_rgba(6,182,212,0.6)] will-change-transform" 
+        className="cursor-node fixed top-0 left-0 w-[15px] h-[15px] bg-cyan-300 rounded-full pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 will-change-transform shadow-[0_0_8px_3px_rgba(6,182,212,0.5),0_0_20px_10px_rgba(6,182,212,0.25),0_0_40px_20px_rgba(6,182,212,0.1)]" 
       />
 
       {/* INTRO SPECTRUM / HERO GRID HERO */}
@@ -77,7 +144,7 @@ export default function Home() {
         
         {/* Call to Actions */}
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-          <Link href="/sign-up" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 text-sm font-bold text-white tracking-wider uppercase shadow-[0_4px_30px_rgba(6,182,212,0.3)] transition-all duration-300 hover:shadow-[0_4px_45px_rgba(6,182,212,0.55)] hover:scale-[1.01] border border-cyan-300/20">
+          <Link href="/sign-up" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-400 to-cyan-600 text-sm font-bold text-white tracking-wider uppercase shadow-[0_4px_30px_rgba(6,182,212,0.3)] transition-all duration-300 hover:shadow-[0_4px_45px_rgba(6,182,212,0.55)] hover:scale-[1.01] border border-cyan-300/20">
             LAUNCH SYSTEM <ArrowRight className="w-4 h-4" />
           </Link>
           <Link href="/dashboard" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-slate-950/80 border border-cyan-500/10 text-sm font-bold font-mono text-slate-400 hover:text-cyan-400 hover:border-cyan-500/30 transition-all backdrop-blur-md tracking-wider">
@@ -158,7 +225,7 @@ export default function Home() {
 
           {/* Card 3 */}
           <div className="group relative rounded-2xl bg-[#090d16]/40 border border-cyan-500/10 p-8 md:p-10 transition-all duration-300 hover:border-indigo-500/30 hover:shadow-[0_0_30px_rgba(99,102,241,0.05)] hover:-translate-y-1 backdrop-blur-md">
-            <div className="w-12 h-12 rounded-xl bg-indigo-950/40 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mb-6 shadow-[0_0_15px_rgba(99,102,241,0.1)]">
+            <div className="w-12 h-12 rounded-xl bg-indigo-950/40 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mb-6 shadow-[0_0_15px_rgba(99,102,241,0.15)]">
               <MessageSquare className="w-5 h-5" />
             </div>
             <h3 className="text-lg font-bold text-white mb-3 group-hover:text-indigo-400 transition-colors font-mono tracking-tight">AI Career Chat</h3>
@@ -168,20 +235,20 @@ export default function Home() {
           </div>
 
           {/* Card 4 */}
-<div className="group relative rounded-2xl bg-[#090d16]/40 border border-emerald-500/30 p-8 md:p-10 transition-all duration-300 hover:shadow-[0_0_30px_rgba(16,185,129,0.05)] hover:-translate-y-1 backdrop-blur-md">
-  <div className="w-12 h-12 rounded-xl bg-emerald-950/40 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-6 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
-    <CheckSquare className="w-5 h-5" />
-  </div>
-  <h3 className="text-lg font-bold text-white mb-3 group-hover:text-emerald-400 transition-colors font-mono tracking-tight">Task Tracker</h3>
-  <p className="text-slate-400 leading-relaxed text-sm md:text-base font-medium">
-    Keep critical communication checkpoints under active automated review. Manage interview schedules and optimize follow-up triggers without leaving the terminal.
-  </p>
-</div>
+          <div className="group relative rounded-2xl bg-[#090d16]/40 border border-emerald-500/30 p-8 md:p-10 transition-all duration-300 hover:shadow-[0_0_30px_rgba(16,185,129,0.05)] hover:-translate-y-1 backdrop-blur-md">
+            <div className="w-12 h-12 rounded-xl bg-emerald-950/40 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-6 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+              <CheckSquare className="w-5 h-5" />
+            </div>
+            <h3 className="text-lg font-bold text-white mb-3 group-hover:text-emerald-400 transition-colors font-mono tracking-tight">Task Tracker</h3>
+            <p className="text-slate-400 leading-relaxed text-sm md:text-base font-medium">
+              Keep critical communication checkpoints under active automated review. Manage interview schedules and optimize follow-up triggers without leaving the terminal.
+            </p>
+          </div>
 
         </div>
       </section>
 
-      {/* CORE SYNC CALL TO ACTION ACCELERATOR (Clean Container + Aerukart Glow Button) */}
+      {/* CORE SYNC CALL TO ACTION ACCELERATOR */}
       <section className="py-16 relative">
         <div className="absolute top-full left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-cyan-500/10 blur-[130px] pointer-events-none rounded-full" />
 
@@ -242,4 +309,4 @@ export default function Home() {
 
     </div>
   )
-}
+} 
