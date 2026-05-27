@@ -8,6 +8,7 @@ import {
   MessageSquare, 
   CheckSquare, 
   ArrowRight,
+  ArrowUp,
   Zap,
   Cpu,
   ShieldCheck,
@@ -16,6 +17,10 @@ import {
 
 export default function Home() {
   const dotRef = useRef<HTMLDivElement>(null);
+  const launchButtonRef = useRef<HTMLAnchorElement>(null);
+  const [mousePos, setMousePos] = React.useState<{ x: number; y: number } | null>(null);
+  const [isHovering, setIsHovering] = React.useState(false);
+  const [showBackToTop, setShowBackToTop] = React.useState(false);
 
   // High-performance, zero-latency custom cursor tracking with active click states
   useEffect(() => {
@@ -54,11 +59,36 @@ export default function Home() {
       }
     };
 
+    const handleLaunchMouseMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
+      if (!launchButtonRef.current) return;
+      const rect = launchButtonRef.current.getBoundingClientRect();
+      setMousePos({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      });
+    };
+
+    const handleLaunchMouseEnter = () => setIsHovering(true);
+    const handleLaunchMouseLeave = () => {
+      setIsHovering(false);
+      setMousePos(null);
+    };
+
+    // Back to top button visibility
+    const handleScroll = () => {
+      const scrollHeight = document.documentElement.scrollHeight;
+      const scrollTop = document.documentElement.scrollTop;
+      const clientHeight = document.documentElement.clientHeight;
+      // Show button when scrolled to last 300px
+      setShowBackToTop(scrollTop + clientHeight >= scrollHeight - 300);
+    };
+
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mouseup', handleMouseUp);
     window.addEventListener('mouseover', handleMouseOver);
     window.addEventListener('mouseout', handleMouseOut);
+    window.addEventListener('scroll', handleScroll);
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
@@ -66,8 +96,21 @@ export default function Home() {
       window.removeEventListener('mouseup', handleMouseUp);
       window.removeEventListener('mouseover', handleMouseOver);
       window.removeEventListener('mouseout', handleMouseOut);
+      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  // LAUNCH SYSTEM button mouse-tracking effect
+  const handleLaunchMouseMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!launchButtonRef.current) return;
+    const rect = launchButtonRef.current.getBoundingClientRect();
+    setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+  };
+  const handleLaunchMouseEnter = () => setIsHovering(true);
+  const handleLaunchMouseLeave = () => {
+    setIsHovering(false);
+    setMousePos(null);
+  };
 
   return (
     <div className="relative max-w-7xl mx-auto px-6">
@@ -146,10 +189,41 @@ export default function Home() {
         
         {/* Call to Actions */}
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-          <Link href="/sign-up" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-400 to-cyan-600 text-sm font-bold text-white tracking-wider uppercase shadow-[0_4px_30px_rgba(6,182,212,0.3)] transition-all duration-300 hover:shadow-[0_4px_45px_rgba(6,182,212,0.55)] hover:scale-[1.01] border border-cyan-300/20">
-            LAUNCH SYSTEM <ArrowRight className="w-4 h-4" />
+          <Link 
+            href="/sign-up"
+            ref={launchButtonRef}
+            onMouseMove={handleLaunchMouseMove}
+            onMouseEnter={handleLaunchMouseEnter}
+            onMouseLeave={handleLaunchMouseLeave}
+            className="relative inline-flex items-center justify-center gap-2 px-10 py-4 rounded-full text-sm font-bold text-white tracking-wider uppercase border border-cyan-400/40 overflow-hidden group transition-all duration-300 hover:scale-105"
+            style={{ 
+              background: '#064e5a',
+              boxShadow: '0 0 15px rgba(6, 182, 212, 0.35), 0 0 30px rgba(6, 182, 212, 0.15)',
+            }}
+          >
+            {/* Full button glow overlay on hover */}
+            {isHovering && (
+              <span
+                className="absolute inset-0 pointer-events-none transition-all duration-300"
+                style={{
+                  background: 'rgba(6, 182, 212, 0.8)',
+                  boxShadow: '0 0 20px rgba(6, 182, 212, 0.6), 0 0 40px rgba(6, 182, 212, 0.3)',
+                }}
+              />
+            )}
+            {/* Mouse-tracking bright spot */}
+            {isHovering && mousePos && (
+              <span
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  background: `radial-gradient(100px at ${mousePos.x}px ${mousePos.y}px, rgba(255, 255, 255, 0.5), transparent 70%)`,
+                }}
+              />
+            )}
+            <span className="relative z-10">LAUNCH SYSTEM</span>
+            <ArrowRight className="relative z-10 w-4 h-4" />
           </Link>
-          <Link href="/dashboard" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-slate-950/80 border border-cyan-500/10 text-sm font-bold font-mono text-slate-400 hover:text-cyan-400 hover:border-cyan-500/30 transition-all backdrop-blur-md tracking-wider">
+          <Link href="/dashboard" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-slate-950/80 border border-cyan-500/10 text-sm font-bold font-mono text-white hover:text-cyan-400 hover:border-cyan-500/30 hover:scale-105 transition-all duration-300 backdrop-blur-md tracking-wider">
             RUN DEMO
           </Link>
         </div>
@@ -167,7 +241,7 @@ export default function Home() {
             <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase text-slate-500 tracking-widest">
               <Activity className="w-3.5 h-3.5 text-cyan-500/60" /> CV PARSE EFFICIENCY
             </div>
-            <div className="text-4xl md:text-5xl font-black text-cyan-400 tracking-tight drop-shadow-[0_0_15px_rgba(6,182,212,0.25)]">95%+</div>
+            <div className="text-4xl md:text-5xl font-black text-cyan-400 tracking-tight drop-shadow-[0_0_15px_rgba(6,182,212,0.25)] font-['Bebas_Neue']" style={{ letterSpacing: '0.1em' }}>95%+</div>
             <div className="text-[10px] text-cyan-500/50 font-bold">STATUS [OPTIMAL]</div>
           </div>
 
@@ -175,7 +249,7 @@ export default function Home() {
             <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase text-slate-500 tracking-widest">
               <Cpu className="w-3.5 h-3.5 text-purple-500/60" /> LATENCY RATIO
             </div>
-            <div className="text-4xl md:text-5xl font-black text-purple-400 tracking-tight drop-shadow-[0_0_15px_rgba(168,85,247,0.25)]">&lt;5ms</div>
+            <div className="text-4xl md:text-5xl font-black text-purple-400 tracking-tight drop-shadow-[0_0_15px_rgba(168,85,247,0.25)] font-['Bebas_Neue']" style={{ letterSpacing: '0.1em' }}>&lt;5ms</div>
             <div className="text-[10px] text-purple-500/50 font-bold">NODE RESPONSE TIME</div>
           </div>
 
@@ -183,7 +257,7 @@ export default function Home() {
             <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase text-slate-500 tracking-widest">
               <ShieldCheck className="w-3.5 h-3.5 text-indigo-500/60" /> VECTOR MATCHING multiplier
             </div>
-            <div className="text-4xl md:text-5xl font-black text-indigo-400 tracking-tight drop-shadow-[0_0_15px_rgba(99,102,241,0.25)]">10x</div>
+            <div className="text-4xl md:text-5xl font-black text-indigo-400 tracking-tight drop-shadow-[0_0_15px_rgba(99,102,241,0.25)] font-['Bebas_Neue']" style={{ letterSpacing: '0.1em' }}>10x</div>
             <div className="text-[10px] text-indigo-500/50 font-bold">DATA EXPANSION RATIO</div>
           </div>
 
@@ -208,7 +282,7 @@ export default function Home() {
             <div className="w-12 h-12 rounded-xl bg-cyan-950/40 border border-cyan-500/20 flex items-center justify-center text-cyan-400 mb-6 shadow-[0_0_15px_rgba(6,182,212,0.1)]">
               <FileText className="w-5 h-5" />
             </div>
-            <h3 className="text-lg font-bold text-white mb-3 group-hover:text-cyan-400 transition-colors font-mono tracking-tight">Smart CV Analysis</h3>
+            <h3 className="text-lg font-bold text-white mb-3 group-hover:text-cyan-400 transition-colors font-['Bebas_Neue']" style={{ letterSpacing: '0.05em' }}>Smart CV Analysis</h3>
             <p className="text-slate-400 leading-relaxed text-sm md:text-base font-medium">
               Parse raw unstructured data points into organized structured JSON manifests, highlighting optimal skill keywords for automated applicant sorting algorithms.
             </p>
@@ -219,7 +293,7 @@ export default function Home() {
             <div className="w-12 h-12 rounded-xl bg-purple-950/40 border border-purple-500/20 flex items-center justify-center text-purple-400 mb-6 shadow-[0_0_15px_rgba(168,85,247,0.1)]">
               <Crosshair className="w-5 h-5" />
             </div>
-            <h3 className="text-lg font-bold text-white mb-3 group-hover:text-purple-400 transition-colors font-mono tracking-tight">Intelligent Job Matching</h3>
+            <h3 className="text-lg font-bold text-white mb-3 group-hover:text-purple-400 transition-colors font-['Bebas_Neue']" style={{ letterSpacing: '0.05em' }}>Intelligent Job Matching</h3>
             <p className="text-slate-400 leading-relaxed text-sm md:text-base font-medium">
               Run continuous spatial classification scoring across thousands of changing vacancies to deliver real-time, context-aware semantic pipeline recommendations.
             </p>
@@ -230,7 +304,7 @@ export default function Home() {
             <div className="w-12 h-12 rounded-xl bg-indigo-950/40 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mb-6 shadow-[0_0_15px_rgba(99,102,241,0.15)]">
               <MessageSquare className="w-5 h-5" />
             </div>
-            <h3 className="text-lg font-bold text-white mb-3 group-hover:text-indigo-400 transition-colors font-mono tracking-tight">AI Career Chat</h3>
+            <h3 className="text-lg font-bold text-white mb-3 group-hover:text-indigo-400 transition-colors font-['Bebas_Neue']" style={{ letterSpacing: '0.05em' }}>AI Career Chat</h3>
             <p className="text-slate-400 leading-relaxed text-sm md:text-base font-medium">
               Interact with custom fine-tuned conversational engines designed to simulate challenging behavioral review models and instantly generate precise cover letters.
             </p>
@@ -241,7 +315,7 @@ export default function Home() {
             <div className="w-12 h-12 rounded-xl bg-emerald-950/40 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-6 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
               <CheckSquare className="w-5 h-5" />
             </div>
-            <h3 className="text-lg font-bold text-white mb-3 group-hover:text-emerald-400 transition-colors font-mono tracking-tight">Task Tracker</h3>
+            <h3 className="text-lg font-bold text-white mb-3 group-hover:text-emerald-400 transition-colors font-['Bebas_Neue']" style={{ letterSpacing: '0.05em' }}>Task Tracker</h3>
             <p className="text-slate-400 leading-relaxed text-sm md:text-base font-medium">
               Keep critical communication checkpoints under active automated review. Manage interview schedules and optimize follow-up triggers without leaving the terminal.
             </p>
@@ -260,7 +334,7 @@ export default function Home() {
           {/* Accent lighting dots inside the container panel */}
           <div className="absolute top-0 left-1/4 w-48 h-48 bg-indigo-500/5 blur-[80px] rounded-full pointer-events-none" />
           
-          <h2 className="text-2xl md:text-4xl font-extrabold text-white tracking-tight mb-4">
+          <h2 className="text-2xl md:text-4xl font-extrabold text-white tracking-[0.06em] mb-4" style={{ letterSpacing: '0.06em' }}>
             Initialize Your Autonomous Career Node
           </h2>
           <p className="text-slate-400 text-sm md:text-base max-w-lg mx-auto mb-8 font-medium">
@@ -308,6 +382,25 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Back to Top Button - Only visible when scrolled to last section */}
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        className="fixed bottom-8 right-8 z-50 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover:w-14 hover:h-14 group"
+        style={{
+          background: '#0a0a0a',
+          boxShadow: '0 0 15px rgba(6, 182, 212, 0.2), 0 0 30px rgba(6, 182, 212, 0.1)',
+          opacity: showBackToTop ? 1 : 0,
+          transform: showBackToTop ? 'translateY(0)' : 'translateY(20px)',
+          pointerEvents: showBackToTop ? 'auto' : 'none',
+        }}
+        aria-label="Scroll to top"
+      >
+        {/* Hover glow overlay */}
+        <span className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-40 transition-opacity duration-300" style={{ background: 'rgba(6, 182, 212, 0.4)' }} />
+        {/* Top arrow icon */}
+        <ArrowUp className="relative z-10 w-5 h-5 text-cyan-300 group-hover:text-cyan-100 group-hover:w-6 group-hover:h-6 transition-all duration-300" />
+      </button>
 
     </div>
   )

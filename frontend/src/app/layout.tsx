@@ -17,8 +17,13 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider>
-      <html lang="en" className="scroll-smooth">
+      <html lang="en" className="scroll-smooth" style={{ fontSize: '18px' }}>
         <head>
+          {/* Bebas Neue Font */}
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+          <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Basenji&display=swap" rel="stylesheet" />
+          
           {/* Custom injection layer for advanced sci-fi scanning & smooth rotation mechanics */}
           <style>{`
             @keyframes smooth-spin {
@@ -43,7 +48,7 @@ export default function RootLayout({
             }
           `}</style>
         </head>
-        <body className="bg-[#030712] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-white overflow-x-hidden min-h-screen antialiased relative">
+        <body className="bg-[#030712] text-slate-100 font-['Bebas_Neue'] selection:bg-cyan-500/30 selection:text-white overflow-x-hidden min-h-screen antialiased relative" style={{ letterSpacing: '0.05em' }}>
           
           {/* Background Cyber Grid Matrix & Radial Plasma Glow */}
           <div className="absolute inset-0 cyber-grid pointer-events-none -z-20" />
@@ -58,14 +63,14 @@ export default function RootLayout({
                 <div className="p-2 bg-gradient-to-br from-cyan-500 via-cyan-400 to-indigo-500 rounded-xl shadow-[0_0_20px_rgba(6,182,212,0.35)] flex items-center justify-center border border-cyan-400/20">
                   <Compass className="w-6 h-6 text-white animate-spin-slow" />
                 </div>
-                <span className="text-xl font-bold tracking-wider bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent uppercase font-mono">
+                <span className="text-xl font-bold tracking-widest text-white font-['Bebas_Neue']">
                   CareerPilot
                 </span>
               </Link>
               
               {/* Actions / Terminal Controls */}
               <div className="flex items-center gap-6">
-                <Link href="/sign-in" className="text-sm font-semibold text-slate-400 hover:text-cyan-400 transition-colors tracking-wide">
+                <Link href="/sign-in" className="text-sm font-semibold text-white hover:text-cyan-400 transition-all duration-300 hover:scale-110">
                   SIGN IN
                 </Link>
                 <Link href="/sign-up" className="relative group overflow-hidden px-5 py-2.5 rounded-lg border border-cyan-400/30 bg-gradient-to-r from-cyan-950/40 to-indigo-950/40 text-sm font-bold text-cyan-400 tracking-wider uppercase transition-all duration-300 hover:shadow-[0_0_25px_rgba(6,182,212,0.4)] hover:border-cyan-400/60 hover:scale-[1.02]">
