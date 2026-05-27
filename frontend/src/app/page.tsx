@@ -322,8 +322,12 @@ export default function Home() {
 
       {/* ISOMETRIC HORACTIVE SYSTEM INTERFACE MATRICES */}
       <section data-scroll-group className="relative my-16 rounded-xl border border-cyan-500/10 bg-gradient-to-b from-slate-950/60 to-black/80 backdrop-blur-xl p-1 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] overflow-hidden">
+        
+        <div className="text-center py-1">
+          <span className="text-sm font-mono font-bold uppercase text-cyan-500/60 tracking-[0.3em]">METRICS</span>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-cyan-500/10 text-center font-mono py-12 px-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-cyan-500/10 text-center font-mono py-2 px-4">
 
           <div data-scroll className="px-8 pt-4 pb-10 flex flex-col items-center justify-center gap-3">
             <div className="flex items-center gap-2 text-xs font-bold uppercase text-slate-500 tracking-widest">
@@ -343,7 +347,7 @@ export default function Home() {
             <div className="text-[11px] text-purple-500/50 font-bold tracking-wider">NODE RESPONSE TIME</div>
           </div>
 
-          <div data-scroll className="px-8 py-10 flex flex-col items-center justify-center gap-3">
+          <div data-scroll className="px-8 pt-4 pb-10 flex flex-col items-center justify-center gap-3">
             <div className="flex items-center gap-2 text-xs font-bold uppercase text-slate-500 tracking-widest">
               <ShieldCheck className="w-4 h-4 text-indigo-500/60" />
               <span>VECTOR MATCHING MULTIPLIER</span>
@@ -351,7 +355,7 @@ export default function Home() {
             <div className="text-5xl md:text-6xl font-black text-indigo-400">10x</div>
             <div className="text-[11px] text-indigo-500/50 font-bold tracking-wider">SEARCH ACCELERATION</div>
           </div>
-
+<div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-cyan-500/10 text-center font-mono py-8 px-4"></div>
         </div>
       </section>
 
