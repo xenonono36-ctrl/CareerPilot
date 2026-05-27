@@ -25,6 +25,69 @@ export default function Home() {
   const [mousePos, setMousePos] = React.useState<{ x: number; y: number } | null>(null);
   const [isHovering, setIsHovering] = React.useState(false);
   const [showBackToTop, setShowBackToTop] = React.useState(false);
+  const [scrollY, setScrollY] = React.useState(0);
+  const [isHeroVisible, setIsHeroVisible] = React.useState(false);
+  const [isLoaded, setIsLoaded] = React.useState(false);
+  const heroRef = useRef<HTMLElement>(null);
+
+  // Mark as loaded after hydration to prevent initial flash
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoaded(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Scroll-triggered animations with IntersectionObserver
+  useEffect(() => {
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px 0px -80px 0px',
+      threshold: 0
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-inview');
+        } else {
+          entry.target.classList.remove('is-inview');
+        }
+      });
+    }, observerOptions);
+
+    // Observe all elements with data-scroll or data-scroll-group attributes
+    const animatedElements = document.querySelectorAll('[data-scroll], [data-scroll-group]');
+    animatedElements.forEach(el => observer.observe(el));
+
+    // Hero visibility observer
+    const heroObserver = new IntersectionObserver(
+      ([entry]) => setIsHeroVisible(entry.isIntersecting),
+      { threshold: 0.1 }
+    );
+    if (heroRef.current) heroObserver.observe(heroRef.current);
+
+    return () => {
+      observer.disconnect();
+      heroObserver.disconnect();
+    };
+  }, []);
+
+  // Smooth scroll-triggered parallax state management
+  useEffect(() => {
+    let rafId: number;
+    
+    const handleScroll = () => {
+      rafId = requestAnimationFrame(() => {
+        setScrollY(window.scrollY);
+        setShowBackToTop(window.scrollY > 600);
+      });
+    };
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      cancelAnimationFrame(rafId);
+    };
+  }, []);
 
   // High-performance, zero-latency custom cursor tracking with active click states
   useEffect(() => {
@@ -170,10 +233,33 @@ export default function Home() {
       />
 
       {/* INTRO SPECTRUM / HERO GRID HERO */}
-      <section className="pt-24 pb-16 text-center relative max-w-4xl mx-auto">
+      <section 
+        ref={heroRef}
+        className="pt-24 pb-16 text-center relative max-w-4xl mx-auto"
+        style={{
+          transform: `translate3d(0, ${scrollY * 0.12}px, 0)`,
+          opacity: Math.max(0, 1 - scrollY * 0.0015),
+          willChange: 'transform, opacity'
+        }}
+      >
 
-        {/* Glow Anchors */}
-        <div className="absolute -top-12 left-1/2 -translate-x-1/2 -z-10 w-72 h-72 bg-indigo-500/10 blur-[100px] rounded-full" />
+        {/* Depth Layer 1 - Far background glow */}
+        <div 
+          className="absolute -top-24 left-1/2 -translate-x-1/2 -z-20 w-[500px] h-[500px] bg-indigo-500/5 blur-[150px] rounded-full"
+          style={{ transform: `translate3d(-50%, ${scrollY * 0.4}px, 0)` }}
+        />
+
+        {/* Depth Layer 2 - Mid background glow */}
+        <div 
+          className="absolute -top-12 left-1/2 -translate-x-1/2 -z-10 w-72 h-72 bg-cyan-500/10 blur-[100px] rounded-full"
+          style={{ transform: `translate3d(-50%, ${scrollY * 0.25}px, 0)` }}
+        />
+
+        {/* Depth Layer 3 - Near accent */}
+        <div 
+          className="absolute -top-6 left-1/4 -z-10 w-48 h-48 bg-purple-500/5 blur-[80px] rounded-full"
+          style={{ transform: `translate3d(0, ${scrollY * 0.18}px, 0)` }}
+        />
 
         {/* Cyber Pill Notification */}
         <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-cyan-950/30 border border-cyan-500/20 backdrop-blur-md text-xs font-mono font-bold text-cyan-400 tracking-widest uppercase mb-8 shadow-[0_0_15px_rgba(6,182,212,0.1)]">
@@ -235,35 +321,35 @@ export default function Home() {
       </section>
 
       {/* ISOMETRIC HORACTIVE SYSTEM INTERFACE MATRICES */}
-      <section className="relative my-16 rounded-2xl border border-cyan-500/10 bg-gradient-to-b from-slate-950/60 to-black/80 backdrop-blur-xl p-1 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] overflow-hidden">
+      <section data-scroll-group className="relative my-16 rounded-xl border border-cyan-500/10 bg-gradient-to-b from-slate-950/60 to-black/80 backdrop-blur-xl p-1 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] overflow-hidden">
 
-        {/* Subtle Ambient Scanner Line effect */}
-        <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-40 shadow-[0_0_12px_rgba(6,182,212,0.8)]" />
+        <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-cyan-500/10 text-center font-mono py-12 px-4">
 
-        <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-cyan-500/10 text-center font-mono py-8 bg-slate-950/20">
-
-          <div className="p-6 space-y-2">
-            <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase text-slate-500 tracking-widest">
-              <Activity className="w-3.5 h-3.5 text-cyan-500/60" /> CV PARSE EFFICIENCY
+          <div data-scroll className="px-8 pt-4 pb-10 flex flex-col items-center justify-center gap-3">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase text-slate-500 tracking-widest">
+              <Activity className="w-4 h-4 text-cyan-500/60" />
+              <span>CV PARSE EFFICIENCY</span>
             </div>
-            <div className="text-4xl md:text-5xl font-black text-cyan-400 tracking-tight drop-shadow-[0_0_15px_rgba(6,182,212,0.25)] font-['Bebas_Neue']" style={{ letterSpacing: '0.1em' }}>95%+</div>
-            <div className="text-[10px] text-cyan-500/50 font-bold">STATUS [OPTIMAL]</div>
+            <div className="text-5xl md:text-6xl font-black text-cyan-400">95%+</div>
+            <div className="text-[11px] text-cyan-500/50 font-bold tracking-wider">STATUS [OPTIMAL]</div>
           </div>
 
-          <div className="p-6 space-y-2">
-            <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase text-slate-500 tracking-widest">
-              <Cpu className="w-3.5 h-3.5 text-purple-500/60" /> LATENCY RATIO
+          <div data-scroll className="px-8 pt-4 pb-10 flex flex-col items-center justify-center gap-3">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase text-slate-500 tracking-widest">
+              <Cpu className="w-4 h-4 text-purple-500/60" />
+              <span>LATENCY RATIO</span>
             </div>
-            <div className="text-4xl md:text-5xl font-black text-purple-400 tracking-tight drop-shadow-[0_0_15px_rgba(168,85,247,0.25)] font-['Bebas_Neue']" style={{ letterSpacing: '0.1em' }}>&lt;5ms</div>
-            <div className="text-[10px] text-purple-500/50 font-bold">NODE RESPONSE TIME</div>
+            <div className="text-5xl md:text-6xl font-black text-purple-400">&lt;5ms</div>
+            <div className="text-[11px] text-purple-500/50 font-bold tracking-wider">NODE RESPONSE TIME</div>
           </div>
 
-          <div className="p-6 space-y-2">
-            <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase text-slate-500 tracking-widest">
-              <ShieldCheck className="w-3.5 h-3.5 text-indigo-500/60" /> VECTOR MATCHING multiplier
+          <div data-scroll className="px-8 py-10 flex flex-col items-center justify-center gap-3">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase text-slate-500 tracking-widest">
+              <ShieldCheck className="w-4 h-4 text-indigo-500/60" />
+              <span>VECTOR MATCHING MULTIPLIER</span>
             </div>
-            <div className="text-4xl md:text-5xl font-black text-indigo-400 tracking-tight drop-shadow-[0_0_15px_rgba(99,102,241,0.25)] font-['Bebas_Neue']" style={{ letterSpacing: '0.1em' }}>10x</div>
-            <div className="text-[10px] text-indigo-500/50 font-bold">DATA EXPANSION RATIO</div>
+            <div className="text-5xl md:text-6xl font-black text-indigo-400">10x</div>
+            <div className="text-[11px] text-indigo-500/50 font-bold tracking-wider">SEARCH ACCELERATION</div>
           </div>
 
         </div>
@@ -271,7 +357,13 @@ export default function Home() {
 
       {/* TRUSTED BY PROFESSIONALS SECTION - Full Width */}
       <div className="w-screen relative left-1/2 -translate-x-1/2">
-        <section className="py-12 relative overflow-hidden">
+        <section data-scroll className="py-12 relative overflow-hidden">
+          {/* Parallax background accent */}
+          <div 
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 w-[800px] h-[300px] bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none"
+            style={{ transform: `translate3d(-50%, -50%, 0)` }}
+          />
+
           <div className="text-center mb-8 px-4">
             <h2 className="text-xl md:text-2xl font-bold text-white mb-3 font-['Bebas_Neue']" style={{ letterSpacing: '0.05em' }}>
               Trusted by Professionals at Leading Companies
@@ -359,14 +451,27 @@ export default function Home() {
         </section>
       </div>
       {/* AUTOPILOT PROTOCOL SECTION */}
-      <section className="py-20 relative">
+      <section 
+        data-scroll
+        className="py-20 relative"
+        style={{
+          transform: `translate3d(0, ${scrollY * 0.03}px, 0)`,
+          willChange: 'transform'
+        }}
+      >
+
+        {/* Subtle background accent */}
+        <div 
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 w-[600px] h-[400px] bg-cyan-500/5 blur-[120px] rounded-full pointer-events-none"
+          style={{ transform: `translate3d(-50%, calc(-50% + ${scrollY * 0.06}px), 0)` }}
+        />
 
         {/* Header and Dashboard Side by Side */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start mb-16">
 
           {/* Left Column - Header Content */}
           <div className="space-y-8">
-            <div className="text-center lg:text-left">
+            <div data-scroll className="text-center lg:text-left">
               <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-cyan-950/30 border border-cyan-500/20 backdrop-blur-md text-[10px] font-mono font-bold text-cyan-400 tracking-widest uppercase mb-6 shadow-[0_0_15px_rgba(6,182,212,0.08)]">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
                 AUTOPILOT PROTOCOL
@@ -384,23 +489,23 @@ export default function Home() {
             </div>
 
             {/* Feature List - Text Only */}
-            <ul className="space-y-4">
-              <li className="flex items-center gap-3 text-sm font-semibold text-white">
+            <ul data-scroll-group className="space-y-4">
+              <li data-scroll className="flex items-center gap-3 text-sm font-semibold text-white">
                 <span className="w-2 h-2 rounded-full bg-cyan-400 flex-shrink-0"></span>
                 Finds high-match jobs automatically
               </li>
-              <li className="flex items-center gap-3 text-sm font-semibold text-white">
+              <li data-scroll className="flex items-center gap-3 text-sm font-semibold text-white">
                 <span className="w-2 h-2 rounded-full bg-purple-400 flex-shrink-0"></span>
                 Tailors every application to the role
               </li>
-              <li className="flex items-center gap-3 text-sm font-semibold text-white">
+              <li data-scroll className="flex items-center gap-3 text-sm font-semibold text-white">
                 <span className="w-2 h-2 rounded-full bg-indigo-400 flex-shrink-0"></span>
                 Tracks every reply in real-time
               </li>
             </ul>
 
             {/* Result Banner - Spans Full Width */}
-            <div className="mt-12 text-center lg:text-left">
+            <div data-scroll className="mt-12 text-center lg:text-left">
               <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-200">
                 You wake up to{' '}
                 <span className="text-cyan-400 font-black">applied jobs</span>
@@ -410,7 +515,7 @@ export default function Home() {
           </div>
 
           {/* Right Column - Autopilot Dashboard Visual */}
-          <div className="relative rounded-[28px] bg-[#090d16]/60 backdrop-blur-md border border-cyan-500/10 p-7 shadow-[0_28px_64px_-14px_rgba(0,0,0,0.4),0_10px_26px_-8px_rgba(6,182,212,0.05)] overflow-hidden min-h-[480px]">
+          <div data-scroll className="relative rounded-[28px] bg-[#090d16]/60 backdrop-blur-md border border-cyan-500/10 p-7 shadow-[0_28px_64px_-14px_rgba(0,0,0,0.4),0_10px_26px_-8px_rgba(6,182,212,0.05)] overflow-hidden min-h-[480px]">
 
             {/* Dashboard Header */}
             <div className="flex items-center justify-between mb-6">
@@ -495,8 +600,13 @@ export default function Home() {
       </section>
 
       {/* BENCHMARK HUD FEATURES MODULE MATRIX */}
-      <section className="py-16 relative">
-        <div className="text-center mb-20 space-y-3">
+      <section data-scroll-group className="py-16 relative">
+        {/* Parallax background accent */}
+        <div 
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 w-[600px] h-[400px] bg-indigo-500/5 blur-[100px] rounded-full pointer-events-none"
+          style={{ transform: `translate3d(-50%, -50%, ${scrollY * 0.05}px)` }}
+        />
+        <div data-scroll className="text-center mb-20 space-y-3">
           <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white font-sans">
             AI Core Architecture
           </h2>
@@ -508,7 +618,7 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
           {/* Card 1 */}
-          <div className="group relative rounded-2xl bg-[#090d16]/40 border border-cyan-500/10 p-8 md:p-10 transition-all duration-300 hover:border-cyan-500/30 hover:shadow-[0_0_30px_rgba(6,182,212,0.05)] hover:-translate-y-1 backdrop-blur-md">
+          <div data-scroll className="group relative rounded-2xl bg-[#090d16]/40 border border-cyan-500/10 p-8 md:p-10 transition-all duration-300 hover:border-cyan-500/30 hover:shadow-[0_0_30px_rgba(6,182,212,0.05)] hover:-translate-y-1 backdrop-blur-md">
             <div className="w-12 h-12 rounded-xl bg-cyan-950/40 border border-cyan-500/20 flex items-center justify-center text-cyan-400 mb-6 shadow-[0_0_15px_rgba(6,182,212,0.1)]">
               <FileText className="w-5 h-5" />
             </div>
@@ -519,7 +629,7 @@ export default function Home() {
           </div>
 
           {/* Card 2 */}
-          <div className="group relative rounded-2xl bg-[#090d16]/40 border border-cyan-500/10 p-8 md:p-10 transition-all duration-300 hover:border-purple-500/30 hover:shadow-[0_0_30px_rgba(168,85,247,0.05)] hover:-translate-y-1 backdrop-blur-md">
+          <div data-scroll className="group relative rounded-2xl bg-[#090d16]/40 border border-cyan-500/10 p-8 md:p-10 transition-all duration-300 hover:border-purple-500/30 hover:shadow-[0_0_30px_rgba(168,85,247,0.05)] hover:-translate-y-1 backdrop-blur-md">
             <div className="w-12 h-12 rounded-xl bg-purple-950/40 border border-purple-500/20 flex items-center justify-center text-purple-400 mb-6 shadow-[0_0_15px_rgba(168,85,247,0.1)]">
               <Crosshair className="w-5 h-5" />
             </div>
@@ -530,7 +640,7 @@ export default function Home() {
           </div>
 
           {/* Card 3 */}
-          <div className="group relative rounded-2xl bg-[#090d16]/40 border border-cyan-500/10 p-8 md:p-10 transition-all duration-300 hover:border-indigo-500/30 hover:shadow-[0_0_30px_rgba(99,102,241,0.05)] hover:-translate-y-1 backdrop-blur-md">
+          <div data-scroll className="group relative rounded-2xl bg-[#090d16]/40 border border-cyan-500/10 p-8 md:p-10 transition-all duration-300 hover:border-indigo-500/30 hover:shadow-[0_0_30px_rgba(99,102,241,0.05)] hover:-translate-y-1 backdrop-blur-md">
             <div className="w-12 h-12 rounded-xl bg-indigo-950/40 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mb-6 shadow-[0_0_15px_rgba(99,102,241,0.15)]">
               <MessageSquare className="w-5 h-5" />
             </div>
@@ -541,7 +651,7 @@ export default function Home() {
           </div>
 
           {/* Card 4 */}
-          <div className="group relative rounded-2xl bg-[#090d16]/40 border border-emerald-500/30 p-8 md:p-10 transition-all duration-300 hover:shadow-[0_0_30px_rgba(16,185,129,0.05)] hover:-translate-y-1 backdrop-blur-md">
+          <div data-scroll className="group relative rounded-2xl bg-[#090d16]/40 border border-emerald-500/30 p-8 md:p-10 transition-all duration-300 hover:shadow-[0_0_30px_rgba(16,185,129,0.05)] hover:-translate-y-1 backdrop-blur-md">
             <div className="w-12 h-12 rounded-xl bg-emerald-950/40 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-6 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
               <CheckSquare className="w-5 h-5" />
             </div>
@@ -555,8 +665,12 @@ export default function Home() {
       </section>
 
       {/* CORE SYNC CALL TO ACTION ACCELERATOR */}
-      <section className="py-16 relative">
-        <div className="absolute top-full left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-cyan-500/10 blur-[130px] pointer-events-none rounded-full" />
+      <section data-scroll className="py-16 relative">
+        {/* Parallax background accent */}
+        <div 
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 w-[700px] h-[400px] bg-cyan-500/10 blur-[130px] pointer-events-none rounded-full"
+          style={{ transform: `translate3d(-50%, -50%, ${scrollY * 0.045}px)` }}
+        />
 
         {/* Main Panel Surface Container */}
         <div className="relative rounded-2xl border border-cyan-500/10 bg-[#090d16]/40 backdrop-blur-md p-12 text-center shadow-[0_20px_50px_rgba(0,0,0,0.4)] overflow-hidden">
@@ -614,8 +728,21 @@ export default function Home() {
       </section>
 
       {/* WHAT HAPPENS NEXT SECTION */}
-      <section className="py-20 relative">
-        <div className="text-center mb-16 space-y-3">
+      <section 
+        data-scroll
+        className="py-20 relative"
+        style={{
+          transform: `translate3d(0, ${scrollY * 0.025}px, 0)`,
+          willChange: 'transform'
+        }}
+      >
+
+        {/* Subtle background accent */}
+        <div 
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 w-[500px] h-[500px] bg-purple-500/5 blur-[100px] rounded-full pointer-events-none"
+          style={{ transform: `translate3d(-50%, calc(-50% + ${scrollY * 0.05}px), 0)` }}
+        />
+        <div data-scroll className="text-center mb-16 space-y-3">
           <span className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-purple-950/30 border border-purple-500/20 backdrop-blur-md text-[10px] font-mono font-bold text-purple-400 tracking-widest uppercase">
             After You Start
           </span>
@@ -628,14 +755,14 @@ export default function Home() {
         </div>
 
         {/* Timeline */}
-        <div className="relative max-w-4xl mx-auto">
+        <div className="relative max-w-4xl mx-auto" data-scroll-group>
           {/* Vertical Rail */}
           <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-cyan-500/50 via-purple-500/50 to-emerald-500/50" />
 
           {/* Timeline Items */}
           <div className="space-y-12">
             {/* Item 1 - In minutes */}
-            <div className="relative pl-12 md:pl-0 md:grid md:grid-cols-2 md:gap-8" style={{ animationDelay: '0s' }}>
+            <div data-scroll className="relative pl-12 md:pl-0 md:grid md:grid-cols-2 md:gap-8" style={{ animationDelay: '0s' }}>
               <div className="md:text-right md:pr-12">
                 <span className="text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider">In minutes</span>
                 <h3 className="text-xl font-bold text-white mt-1 mb-2">Jobs start appearing</h3>
@@ -649,7 +776,7 @@ export default function Home() {
             </div>
 
             {/* Item 2 - Within hours */}
-            <div className="relative pl-12 md:pl-0 md:grid md:grid-cols-2 md:gap-8" style={{ animationDelay: '0.12s' }}>
+            <div data-scroll className="relative pl-12 md:pl-0 md:grid md:grid-cols-2 md:gap-8" style={{ animationDelay: '0.12s' }}>
               <div className="md:text-right md:pr-12 md:order-2">
                 <span className="text-xs font-mono font-bold text-amber-400 uppercase tracking-wider">Within hours</span>
                 <h3 className="text-xl font-bold text-white mt-1 mb-2">Applications start going out</h3>
@@ -685,11 +812,20 @@ export default function Home() {
       </section>
 
       {/* AUTO-APPLY SECTION */}
-      <section className="py-20 md:py-28 relative overflow-hidden">
+      <section data-scroll-group className="py-20 md:py-28 relative overflow-hidden">
+        {/* Parallax background accents */}
+        <div 
+          className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 -z-10 w-[500px] h-[500px] bg-blue-500/5 blur-[100px] rounded-full pointer-events-none"
+          style={{ transform: `translate3d(50%, ${scrollY * 0.04}px, 0)` }}
+        />
+        <div 
+          className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 -z-10 w-[400px] h-[400px] bg-purple-500/5 blur-[80px] rounded-full pointer-events-none"
+          style={{ transform: `translate3d(-50%, ${-scrollY * 0.03}px, 0)` }}
+        />
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
             {/* Left: Copy */}
-            <div className="space-y-6">
+            <div data-scroll className="space-y-6">
               <span className="relative inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-blue-900/30 border border-blue-500/20 backdrop-blur-md text-[10px] font-mono font-bold text-blue-400 tracking-widest uppercase">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
@@ -834,10 +970,19 @@ export default function Home() {
       </section>
 
       {/* TRANSFORMATION SECTION */}
-      <section className="py-20 md:py-28 relative overflow-hidden">
+      <section data-scroll-group className="py-20 md:py-28 relative overflow-hidden">
+        {/* Parallax background accents */}
+        <div 
+          className="absolute top-0 left-1/4 -z-10 w-[400px] h-[400px] bg-emerald-500/5 blur-[100px] rounded-full pointer-events-none"
+          style={{ transform: `translate3d(-50%, ${scrollY * 0.035}px, 0)` }}
+        />
+        <div 
+          className="absolute bottom-0 right-1/4 -z-10 w-[350px] h-[350px] bg-cyan-500/5 blur-[80px] rounded-full pointer-events-none"
+          style={{ transform: `translate3d(50%, ${-scrollY * 0.025}px, 0)` }}
+        />
         <div className="max-w-7xl mx-auto px-4">
           {/* Header */}
-          <div className="text-center mb-16 space-y-3">
+          <div data-scroll className="text-center mb-16 space-y-3">
             <span className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-purple-900/30 border border-purple-500/20 backdrop-blur-md text-[10px] font-mono font-bold text-purple-400 tracking-widest uppercase">
               The Transformation
             </span>
@@ -851,9 +996,9 @@ export default function Home() {
           </div>
 
           {/* Comparison */}
-          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-center gap-6 md:gap-8 max-w-5xl mx-auto">
+          <div data-scroll-group className="flex flex-col md:flex-row items-stretch md:items-center justify-center gap-6 md:gap-8 max-w-5xl mx-auto">
             {/* Without */}
-            <div className="flex-1 bg-red-500/5 border border-red-500/20 rounded-2xl p-6 md:p-8">
+            <div data-scroll className="flex-1 min-h-[300px] bg-red-500/5 border border-red-500/20 rounded-2xl p-6 md:p-8">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/30 mb-4">
                 <span className="text-xs font-mono font-bold text-red-400 tracking-wide">Without CareerPilot</span>
               </div>
@@ -887,7 +1032,7 @@ export default function Home() {
             </div>
 
             {/* Arrow */}
-            <div className="flex md:flex-col items-center justify-center">
+            <div className="flex md:flex-col items-center justify-center -mt-16">
               <button className="group w-14 h-14 rounded-full border border-cyan-500/40 flex items-center justify-center bg-cyan-500/10 backdrop-blur-sm hover:bg-cyan-500/20 hover:border-cyan-400/60 hover:scale-110 transition-all duration-300 hover:shadow-[0_0_20px_rgba(6,182,212,0.4)]">
                 <svg className="w-7 h-7 text-cyan-400 group-hover:text-cyan-300 group-hover:w-8 group-hover:h-8 transition-all duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M5 12h14M13 5l7 7-7 7"></path>
@@ -896,7 +1041,7 @@ export default function Home() {
             </div>
 
             {/* With */}
-            <div className="flex-1 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-6 md:p-8">
+            <div className="flex-1 min-h-[300px] bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-6 md:p-8 -mt-16">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 mb-4">
                 <span className="text-xs font-mono font-bold text-emerald-400 tracking-wide">With CareerPilot</span>
               </div>
@@ -933,10 +1078,19 @@ export default function Home() {
       </section>
 
       {/* FEEDBACK LOOP SECTION */}
-      <section className="py-20 md:py-28 relative overflow-hidden">
+      <section data-scroll-group className="py-20 md:py-28 relative overflow-hidden">
+        {/* Parallax background accents */}
+        <div 
+          className="absolute top-1/3 left-1/3 -z-10 w-[600px] h-[600px] bg-purple-500/5 blur-[120px] rounded-full pointer-events-none"
+          style={{ transform: `translate3d(-50%, ${scrollY * 0.04}px, 0)` }}
+        />
+        <div 
+          className="absolute bottom-1/3 right-1/3 -z-10 w-[450px] h-[450px] bg-blue-500/5 blur-[100px] rounded-full pointer-events-none"
+          style={{ transform: `translate3d(50%, ${-scrollY * 0.03}px, 0)` }}
+        />
         <div className="max-w-7xl mx-auto px-4 relative">
           {/* Header */}
-          <div className="text-center mb-16 space-y-3">
+          <div data-scroll className="text-center mb-16 space-y-3">
             <span className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-purple-900/30 border border-purple-500/20 backdrop-blur-md text-[10px] font-mono font-bold text-purple-400 tracking-widest uppercase">
               The Feedback Loop
             </span>
@@ -950,7 +1104,7 @@ export default function Home() {
           </div>
 
           {/* Engine Diagram - Matching reference styling */}
-          <div className="relative max-w-4xl mx-auto mb-16">
+          <div data-scroll className="relative max-w-4xl mx-auto mb-16">
             {/* AI Engine - Responsive sizing matching reference */}
             <div className="ap-insights__engine" style={{ '--ap-insights-total': 8 } as React.CSSProperties}>
               {/* SVG Rings */}
@@ -1092,9 +1246,9 @@ export default function Home() {
           </div>
 
           {/* Insight Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-10">
+          <div data-scroll-group className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-10">
             {/* Card 1 */}
-            <div className="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-6 hover:border-blue-500/40 transition-colors duration-300">
+            <div data-scroll className="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-6 hover:border-blue-500/40 transition-colors duration-300">
               <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-xs font-mono font-bold text-blue-400 tracking-wide mb-4">
                 Pattern detected
               </span>
@@ -1103,7 +1257,7 @@ export default function Home() {
             </div>
 
             {/* Card 2 */}
-            <div className="bg-purple-500/10 border border-purple-500/20 rounded-2xl p-6 hover:border-purple-500/40 transition-colors duration-300">
+            <div data-scroll className="bg-purple-500/10 border border-purple-500/20 rounded-2xl p-6 hover:border-purple-500/40 transition-colors duration-300">
               <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 text-xs font-mono font-bold text-purple-400 tracking-wide mb-4">
                 Best fit
               </span>
@@ -1112,7 +1266,7 @@ export default function Home() {
             </div>
 
             {/* Card 3 */}
-            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-6 hover:border-emerald-500/40 transition-colors duration-300">
+            <div data-scroll className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-6 hover:border-emerald-500/40 transition-colors duration-300">
               <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-xs font-mono font-bold text-emerald-400 tracking-wide mb-4">
                 Timing
               </span>
@@ -1122,7 +1276,7 @@ export default function Home() {
           </div>
 
           {/* Moat Tagline */}
-          <p className="text-center text-slate-400 text-base md:text-lg font-medium">
+          <p data-scroll className="text-center text-slate-400 text-base md:text-lg font-medium">
             This is the advantage no tool can match — because no tool owns the full loop.
           </p>
         </div>
