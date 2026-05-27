@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image'
 import React, { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { 
@@ -263,6 +264,95 @@ export default function Home() {
 
         </div>
       </section>
+
+      {/* TRUSTED BY PROFESSIONALS SECTION - Full Width */}
+      <div className="w-screen relative left-1/2 -translate-x-1/2">
+        <section className="py-12 relative overflow-hidden">
+          <div className="text-center mb-8 px-4">
+            <h2 className="text-xl md:text-2xl font-bold text-white mb-3 font-['Bebas_Neue']" style={{ letterSpacing: '0.05em' }}>
+              Trusted by Professionals at Leading Companies
+            </h2>
+            <p className="text-slate-400 text-sm md:text-base max-w-xl mx-auto font-medium">
+              Join thousands of job seekers who have landed roles at top organizations with CareerPilot
+            </p>
+          </div>
+
+          {/* Infinite Scroll Logo Carousel - Full Width */}
+          <div className="relative w-full overflow-hidden">
+          {/* Gradient masks for fade effect */}
+          <div className="absolute left-0 top-0 bottom-0 w-48 bg-gradient-to-r from-slate-950 via-slate-950/95 to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-48 bg-gradient-to-l from-slate-950 via-slate-950/95 to-transparent z-10 pointer-events-none" />
+          
+          <div className="flex gap-16 animate-[scroll_40s_linear_infinite]">
+            {/* First set of logos */}
+            {[
+              { name: 'Google', slug: 'google' },
+              { name: 'Microsoft', slug: 'microsoft' },
+              { name: 'Amazon', slug: 'amazon' },
+              { name: 'Apple', slug: 'apple' },
+              { name: 'Meta', slug: 'meta' },
+              { name: 'Netflix', slug: 'netflix' },
+              { name: 'Tesla', slug: 'tesla' },
+              { name: 'IBM', slug: 'IBM' },
+              { name: 'Adobe', slug: 'Adobe' },
+              { name: 'Salesforce', slug: 'salesforce' },
+              { name: 'Oracle', slug: 'Oracle' },
+              { name: 'Shopify', slug: 'shopify' },
+              { name: 'NVIDIA', slug: 'nvidia' },
+              { name: 'Intel', slug: 'intel' },
+              { name: 'Coca-Cola', slug: 'cocacola' },
+              { name: 'Delta', slug: 'delta' },
+              { name: 'Walmart', slug: 'walmart' },
+              { name: 'JP Morgan', slug: 'jpmorgan' },
+              { name: 'Deloitte', slug: 'deloitte' },
+            ].map((company, i) => (
+              <div key={`first-${i}`} className="flex-shrink-0 flex flex-col items-center gap-3 opacity-80 hover:opacity-100 transition-opacity duration-300">
+                <div className="w-20 h-20 flex items-center justify-center">
+                  <Image src={`/logos/${company.slug}.png`} alt={company.name} width={64} height={64} className="w-auto h-auto max-w-16 max-h-16 object-contain" />
+                </div>
+                <span className="text-xs font-mono text-slate-400 tracking-wide">{company.name}</span>
+              </div>
+            ))}
+            {/* Duplicate set for seamless loop */}
+            {[
+              { name: 'Google', slug: 'google' },
+              { name: 'Microsoft', slug: 'microsoft' },
+              { name: 'Amazon', slug: 'amazon' },
+              { name: 'Apple', slug: 'apple' },
+              { name: 'Meta', slug: 'meta' },
+              { name: 'Netflix', slug: 'netflix' },
+              { name: 'Tesla', slug: 'tesla' },
+              { name: 'IBM', slug: 'IBM' },
+              { name: 'Adobe', slug: 'Adobe' },
+              { name: 'Salesforce', slug: 'salesforce' },
+              { name: 'Oracle', slug: 'Oracle' },
+              { name: 'Shopify', slug: 'shopify' },
+              { name: 'NVIDIA', slug: 'nvidia' },
+              { name: 'Intel', slug: 'intel' },
+              { name: 'Coca-Cola', slug: 'cocacola' },
+              { name: 'Delta', slug: 'delta' },
+              { name: 'Walmart', slug: 'walmart' },
+              { name: 'JP Morgan', slug: 'jpmorgan' },
+              { name: 'Deloitte', slug: 'deloitte' },
+            ].map((company, i) => (
+              <div key={`second-${i}`} className="flex-shrink-0 flex flex-col items-center gap-3 opacity-80 hover:opacity-100 transition-opacity duration-300">
+                <div className="w-20 h-20 flex items-center justify-center">
+                  <Image src={`/logos/${company.slug}.png`} alt={company.name} width={64} height={64} className="w-auto h-auto max-w-16 max-h-16 object-contain" />
+                </div>
+                <span className="text-xs font-mono text-slate-400 tracking-wide">{company.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <style dangerouslySetInnerHTML={{__html: `
+          @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+        `}} />
+      </section>
+      </div>
 
       {/* BENCHMARK HUD FEATURES MODULE MATRIX */}
       <section className="py-16 relative">
