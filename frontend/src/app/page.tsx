@@ -684,6 +684,155 @@ export default function Home() {
         </p>
       </section>
 
+      {/* AUTO-APPLY SECTION */}
+      <section className="py-20 md:py-28 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
+            {/* Left: Copy */}
+            <div className="space-y-6">
+              <span className="relative inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-blue-900/30 border border-blue-500/20 backdrop-blur-md text-[10px] font-mono font-bold text-blue-400 tracking-widest uppercase">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                </span>
+                Real Auto-Apply
+              </span>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-white">
+                Not autofill.<br />
+                <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">Actual execution.</span>
+              </h2>
+              <p className="text-slate-400 text-base md:text-lg max-w-lg">
+                Most "auto-apply" tools just suggest jobs or click one button. CareerPilot runs the full flow — server-side and in the browser — handling real forms, file uploads, and email verifications.
+              </p>
+
+              {/* Features Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
+                {/* Server-side engine */}
+                <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-5 hover:border-cyan-500/40 transition-colors duration-300">
+                  <div className="w-12 h-12 rounded-xl bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center mb-4">
+                    <svg className="w-6 h-6 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="2" y="3" width="20" height="14" rx="2"></rect>
+                      <line x1="8" y1="21" x2="16" y2="21"></line>
+                      <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                  </div>
+                  <h4 className="font-semibold text-white mb-2">Server-side engine</h4>
+                  <p className="text-sm text-slate-400">Runs 24/7 against every ATS we integrate with. No laptop needed — it keeps applying while you sleep.</p>
+                </div>
+
+                {/* Chrome extension */}
+                <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-5 hover:border-purple-500/40 transition-colors duration-300">
+                  <div className="w-12 h-12 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center mb-4">
+                    <svg className="w-6 h-6 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="2" y1="12" x2="22" y2="12"></line>
+                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                    </svg>
+                  </div>
+                  <h4 className="font-semibold text-white mb-2">Chrome extension</h4>
+                  <p className="text-sm text-slate-400">For complex or JS-heavy forms, the extension pairs with your session and completes submissions natively.</p>
+                </div>
+
+                {/* Email verification handled */}
+                <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-5 hover:border-emerald-500/40 transition-colors duration-300">
+                  <div className="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center mb-4">
+                    <svg className="w-6 h-6 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                      <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                  </div>
+                  <h4 className="font-semibold text-white mb-2">Email verification handled</h4>
+                  <p className="text-sm text-slate-400">Per-user inbox catches verification emails and completes the loop automatically — no manual clicking.</p>
+                </div>
+              </div>
+
+              {/* Full-width Feature Tile */}
+              <div className="mt-4 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-red-500/10 border border-amber-500/20 rounded-xl p-7 hover:border-amber-500/40 transition-colors duration-300">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                  {/* Icon */}
+                  <div className="flex-shrink-0 w-16 h-16 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
+                    <svg className="w-8 h-8 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                  </div>
+                  {/* Content */}
+                  <div className="flex-1">
+                    <h4 className="text-lg font-semibold text-white mb-1">Smart Job Matching</h4>
+                    <p className="text-base text-slate-400">AI-powered fit score rates every posting against your resume and preferences. Filter by match threshold to only apply where you have a real shot.</p>
+                  </div>
+                  {/* Visual */}
+                  <div className="flex-shrink-0 flex items-center gap-4 bg-[#0b1220]/60 rounded-lg px-5 py-4 border border-slate-700/50">
+                    <div className="text-right">
+                      <div className="text-3xl font-bold text-amber-400">87%</div>
+                      <div className="text-sm text-slate-500">match</div>
+                    </div>
+                    <div className="w-3 h-14 bg-slate-700 rounded-full overflow-hidden">
+                      <div className="w-full bg-gradient-to-t from-amber-500 to-amber-300 rounded-full" style={{height: '87%'}}></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Terminal */}
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-3xl blur-3xl" />
+              <div className="relative bg-[#0b1220] rounded-2xl border border-slate-700/50 overflow-hidden shadow-2xl">
+                {/* Terminal Header */}
+                <div className="flex items-center gap-3 px-4 py-3 bg-[#0f172a] border-b border-slate-700/50">
+                  <div className="flex gap-1.5">
+                    <span className="w-3 h-3 rounded-full bg-red-500/80" />
+                    <span className="w-3 h-3 rounded-full bg-yellow-500/80" />
+                    <span className="w-3 h-3 rounded-full bg-green-500/80" />
+                  </div>
+                  <span className="text-xs font-mono text-slate-400">autopilot · live</span>
+                  <span className="ml-auto flex items-center gap-1.5 text-xs font-mono text-emerald-400">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    RUNNING
+                  </span>
+                </div>
+
+                {/* Terminal Body */}
+                <div className="p-4 font-mono text-sm space-y-1">
+                  <div className="text-cyan-400">[06:12] Autopilot engine starting…</div>
+                  <div className="text-cyan-400">[06:12] Loaded profile · 8 preferences</div>
+                  <div className="text-cyan-400">[06:13] Scanning Greenhouse, Lever, Workday, Ashby…</div>
+                  <div className="text-emerald-400">[06:14] Found 2,341 new postings · matching…</div>
+                  <div className="text-emerald-400">[06:14] Matched 38 roles above threshold</div>
+                  <div className="text-cyan-400">[06:15] Generating tailored resumes…</div>
+                  <div className="text-emerald-400">[06:18] 12 packs ready for submission</div>
+                  <div className="text-cyan-400">[06:19] Submitting to Greenhouse · Linear…</div>
+                  <div className="text-emerald-400 pl-4">→ submitted · confirmation #L-48213</div>
+                  <div className="text-cyan-400">[06:20] Submitting to Lever · Vercel…</div>
+                  <div className="text-emerald-400 pl-4">→ submitted · confirmation #V-91187</div>
+                  <div className="text-cyan-400">[06:21] Opening complex form · Stripe (browser)</div>
+                  <div className="text-emerald-400 pl-4">→ extension filled 14 fields + uploaded resume</div>
+                  <div className="text-emerald-400 pl-4">→ submitted · confirmation #ST-22109</div>
+                  <div className="text-cyan-400">[06:23] Handling verification email · inbox…</div>
+                  <div className="text-emerald-400 pl-4">→ verified automatically</div>
+                  <div className="text-cyan-400">[06:24] Submitting to Ashby · Notion…</div>
+                  <div className="text-emerald-400 pl-4">→ submitted · confirmation #NT-77451</div>
+                  <div className="text-cyan-400">[06:25] Cover letter generated · Figma</div>
+                  <div className="text-emerald-400 pl-4">→ submitted · confirmation #FG-20418</div>
+                  <div className="text-emerald-400">[09:41] Recruiter reply received · Acme Corp</div>
+                  <div className="text-cyan-400 mt-4 pt-2 border-t border-slate-700/50">[13:10] Cycle complete · 16 submitted · 0 errors</div>
+                  <div className="text-cyan-400">[13:18] Scanning Workday batch · 840 postings</div>
+                  <div className="text-emerald-400">[13:21] Matched 9 roles · generating packs…</div>
+                  <div className="text-cyan-400">[13:24] Submitting to Workday · Datadog…</div>
+                  <div className="text-emerald-400 pl-4">→ submitted · confirmation #DD-88302</div>
+                  <div className="text-cyan-400">[13:26] Submitting to SmartRecruiters · MongoDB…</div>
+                  <div className="text-emerald-400 pl-4">→ PDF upload + 6 custom fields filled</div>
+                  <div className="text-emerald-400 pl-4">→ submitted · confirmation #MG-44021</div>
+                  <div className="flex items-center gap-1 text-emerald-400 mt-2">
+                    <span className="animate-pulse">_</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Back to Top Button - Only visible when scrolled to last section */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
