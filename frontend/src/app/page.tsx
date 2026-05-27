@@ -103,13 +103,15 @@ export default function Home() {
           box-shadow: 0 0 20px 2px #06b6d4, inset 0 0 10px rgba(6, 182, 212, 0.5) !important;
         }
         
-        /* Hover State: Larger with dark cyan fill and light cyan outline */
+        /* Hover State: Larger with dark cyan fill, light cyan outline, and Gaussian blur */
         .cursor-hover-button {
           width: 30px !important;
           height: 30px !important;
-          background-color: #0d3d42 !important;
+          background-color: rgba(13, 61, 66, 0.2) !important;
           border: 2px solid #06b6d4 !important;
           box-shadow: 0 0 12px 3px rgba(6, 182, 212, 0.5), 0 0 25px 6px rgba(6, 182, 212, 0.3) !important;
+          backdrop-filter: blur(8px) saturate(180%) !important;
+          -webkit-backdrop-filter: blur(8px) saturate(180%) !important;
         }
       `}} />
       
