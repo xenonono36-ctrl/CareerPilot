@@ -680,7 +680,7 @@ export default function Home() {
 
         {/* Footer Text */}
         <p className="text-center mt-16 text-slate-400 text-base">
-          Most users <strong className="text-white">begin getting responses within days</strong> — because applications keep going out every single day.
+          Most users <strong className="text-cyan-400">begin getting responses within days</strong> — because applications keep going out every single day.
         </p>
       </section>
 
@@ -830,6 +830,301 @@ export default function Home() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* TRANSFORMATION SECTION */}
+      <section className="py-20 md:py-28 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4">
+          {/* Header */}
+          <div className="text-center mb-16 space-y-3">
+            <span className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-purple-900/30 border border-purple-500/20 backdrop-blur-md text-[10px] font-mono font-bold text-purple-400 tracking-widest uppercase">
+              The Transformation
+            </span>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-white">
+              From Manual Grind to<br />
+              <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">Automated Flow</span>
+            </h2>
+            <p className="text-slate-400 max-w-xl mx-auto text-base md:text-lg">
+              Here's exactly what changes the moment Autopilot takes over.
+            </p>
+          </div>
+
+          {/* Comparison */}
+          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-center gap-6 md:gap-8 max-w-5xl mx-auto">
+            {/* Without */}
+            <div className="flex-1 bg-red-500/5 border border-red-500/20 rounded-2xl p-6 md:p-8">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/30 mb-4">
+                <span className="text-xs font-mono font-bold text-red-400 tracking-wide">Without CareerPilot</span>
+              </div>
+              <p className="text-sm font-medium text-slate-400 mb-6">The manual grind</p>
+              <ul className="space-y-4">
+                <li className="flex items-center gap-3">
+                  <svg className="w-5 h-5 text-red-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 6 6 18M6 6l12 12"></path>
+                  </svg>
+                  <span className="text-slate-300">Search jobs manually</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <svg className="w-5 h-5 text-red-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 6 6 18M6 6l12 12"></path>
+                  </svg>
+                  <span className="text-slate-300">Edit resume every time</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <svg className="w-5 h-5 text-red-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 6 6 18M6 6l12 12"></path>
+                  </svg>
+                  <span className="text-slate-300">Fill forms repeatedly</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <svg className="w-5 h-5 text-red-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 6 6 18M6 6l12 12"></path>
+                  </svg>
+                  <span className="text-slate-300">Lose track of applications</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Arrow */}
+            <div className="flex md:flex-col items-center justify-center">
+              <button className="group w-14 h-14 rounded-full border border-cyan-500/40 flex items-center justify-center bg-cyan-500/10 backdrop-blur-sm hover:bg-cyan-500/20 hover:border-cyan-400/60 hover:scale-110 transition-all duration-300 hover:shadow-[0_0_20px_rgba(6,182,212,0.4)]">
+                <svg className="w-7 h-7 text-cyan-400 group-hover:text-cyan-300 group-hover:w-8 group-hover:h-8 transition-all duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M13 5l7 7-7 7"></path>
+                </svg>
+              </button>
+            </div>
+
+            {/* With */}
+            <div className="flex-1 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-6 md:p-8">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 mb-4">
+                <span className="text-xs font-mono font-bold text-emerald-400 tracking-wide">With CareerPilot</span>
+              </div>
+              <p className="text-sm font-medium text-slate-400 mb-6">Autopilot takes over</p>
+              <ul className="space-y-4">
+                <li className="flex items-center gap-3">
+                  <svg className="w-5 h-5 text-emerald-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 6 9 17l-5-5"></path>
+                  </svg>
+                  <span className="text-slate-300">Jobs come to you</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <svg className="w-5 h-5 text-emerald-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 6 9 17l-5-5"></path>
+                  </svg>
+                  <span className="text-slate-300">Resume tailored instantly</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <svg className="w-5 h-5 text-emerald-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 6 9 17l-5-5"></path>
+                  </svg>
+                  <span className="text-slate-300">Applications handled automatically</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <svg className="w-5 h-5 text-emerald-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 6 9 17l-5-5"></path>
+                  </svg>
+                  <span className="text-slate-300">Everything tracked in one place</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FEEDBACK LOOP SECTION */}
+      <section className="py-20 md:py-28 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 relative">
+          {/* Header */}
+          <div className="text-center mb-16 space-y-3">
+            <span className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-purple-900/30 border border-purple-500/20 backdrop-blur-md text-[10px] font-mono font-bold text-purple-400 tracking-widest uppercase">
+              The Feedback Loop
+            </span>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-white">
+              Insights nobody else can give you.<br />
+              <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-emerald-400 bg-clip-text text-transparent">Because nobody else runs the whole loop.</span>
+            </h2>
+            <p className="text-slate-400 max-w-xl mx-auto text-base md:text-lg">
+              CareerPilot runs discovery, tailoring, applying, and inbox tracking — all in one system. Every step feeds back in, so your results compound over time.
+            </p>
+          </div>
+
+          {/* Engine Diagram - Matching reference styling */}
+          <div className="relative max-w-4xl mx-auto mb-16">
+            {/* AI Engine - Responsive sizing matching reference */}
+            <div className="ap-insights__engine" style={{ '--ap-insights-total': 8 } as React.CSSProperties}>
+              {/* SVG Rings */}
+              <svg className="ap-insights__ring" viewBox="0 0 600 600" preserveAspectRatio="xMidYMid meet">
+                <defs>
+                  <linearGradient id="apInsightsArc" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#60a5fa" />
+                    <stop offset="50%" stopColor="#a78bfa" />
+                    <stop offset="100%" stopColor="#34d399" />
+                  </linearGradient>
+                </defs>
+                <circle cx="300" cy="300" r="228" className="ap-insights__ring-current" stroke="url(#apInsightsArc)" />
+              </svg>
+
+              {/* Central Core */}
+              <div className="ap-insights__core">
+                <strong className="ap-insights__core-title">CareerPilot AI</strong>
+                <span className="ap-insights__core-sub">Always learning</span>
+              </div>
+
+              {/* Node 1: Discover - Top (0°) */}
+              <div className="ap-insights__node ap-insights__node--blue" style={{ '--i': 0, '--ap-insights-stagger': '0s' } as React.CSSProperties}>
+                <span className="ap-insights__node-step">#01</span>
+                <div className="ap-insights__node-disc">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.3-4.3"></path>
+                  </svg>
+                </div>
+                <div className="ap-insights__node-body">
+                  <div className="ap-insights__node-label">Discover</div>
+                  <div className="ap-insights__node-desc">Sourcing roles</div>
+                </div>
+              </div>
+
+              {/* Node 2: Match - Top Right (45°) */}
+              <div className="ap-insights__node ap-insights__node--cyan" style={{ '--i': 1, '--ap-insights-stagger': '0.14s' } as React.CSSProperties}>
+                <span className="ap-insights__node-step">#02</span>
+                <div className="ap-insights__node-disc">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+                  </svg>
+                </div>
+                <div className="ap-insights__node-body">
+                  <div className="ap-insights__node-label">Match</div>
+                  <div className="ap-insights__node-desc">AI scoring</div>
+                </div>
+              </div>
+
+              {/* Node 3: Tailor - Right (90°) */}
+              <div className="ap-insights__node ap-insights__node--purple" style={{ '--i': 2, '--ap-insights-stagger': '0.28s' } as React.CSSProperties}>
+                <span className="ap-insights__node-step">#03</span>
+                <div className="ap-insights__node-disc">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M15 4V2M15 16v-2M8 9h2M20 9h2M17.8 11.8 19 13M15 9h.01M17.8 6.2 19 5M3 21l9-9M12.2 6.2 11 5"></path>
+                  </svg>
+                </div>
+                <div className="ap-insights__node-body">
+                  <div className="ap-insights__node-label">Tailor</div>
+                  <div className="ap-insights__node-desc">Per-role pack</div>
+                </div>
+              </div>
+
+              {/* Node 4: Apply - Bottom Right (135°) */}
+              <div className="ap-insights__node ap-insights__node--pink" style={{ '--i': 3, '--ap-insights-stagger': '0.42s' } as React.CSSProperties}>
+                <span className="ap-insights__node-step">#04</span>
+                <div className="ap-insights__node-disc">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="m22 2-7 20-4-9-9-4Z"></path>
+                    <path d="M22 2 11 13"></path>
+                  </svg>
+                </div>
+                <div className="ap-insights__node-body">
+                  <div className="ap-insights__node-label">Apply</div>
+                  <div className="ap-insights__node-desc">Auto-submit</div>
+                </div>
+              </div>
+
+              {/* Node 5: Track - Bottom (180°) */}
+              <div className="ap-insights__node ap-insights__node--amber" style={{ '--i': 4, '--ap-insights-stagger': '0.56s' } as React.CSSProperties}>
+                <span className="ap-insights__node-step">#05</span>
+                <div className="ap-insights__node-disc">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                    <path d="m3 7 9 6 9-6"></path>
+                  </svg>
+                </div>
+                <div className="ap-insights__node-body">
+                  <div className="ap-insights__node-label">Track</div>
+                  <div className="ap-insights__node-desc">Inbox + status</div>
+                </div>
+              </div>
+
+              {/* Node 6: Learn - Bottom Left (225°) */}
+              <div className="ap-insights__node ap-insights__node--emerald" style={{ '--i': 5, '--ap-insights-stagger': '0.70s' } as React.CSSProperties}>
+                <span className="ap-insights__node-step">#06</span>
+                <div className="ap-insights__node-disc">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"></path>
+                    <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"></path>
+                  </svg>
+                </div>
+                <div className="ap-insights__node-body">
+                  <div className="ap-insights__node-label">Learn</div>
+                  <div className="ap-insights__node-desc">Improve outcomes</div>
+                </div>
+              </div>
+
+              {/* Node 7: Send - Left (270°) */}
+              <div className="ap-insights__node ap-insights__node--rose" style={{ '--i': 6, '--ap-insights-stagger': '0.84s' } as React.CSSProperties}>
+                <span className="ap-insights__node-step">#07</span>
+                <div className="ap-insights__node-disc">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="m3 3 7.07 16.97 2.51-7.39 7.39-2.51L3 3z"></path>
+                    <path d="m13 13 6 6"></path>
+                  </svg>
+                </div>
+                <div className="ap-insights__node-body">
+                  <div className="ap-insights__node-label">Send</div>
+                  <div className="ap-insights__node-desc">Auto-reply</div>
+                </div>
+              </div>
+
+              {/* Node 8: Read - Top Left (315°) */}
+              <div className="ap-insights__node ap-insights__node--indigo" style={{ '--i': 7, '--ap-insights-stagger': '0.98s' } as React.CSSProperties}>
+                <span className="ap-insights__node-step">#08</span>
+                <div className="ap-insights__node-disc">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                  </svg>
+                </div>
+                <div className="ap-insights__node-body">
+                  <div className="ap-insights__node-label">Read</div>
+                  <div className="ap-insights__node-desc">Inbox scan</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Insight Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-10">
+            {/* Card 1 */}
+            <div className="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-6 hover:border-blue-500/40 transition-colors duration-300">
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-xs font-mono font-bold text-blue-400 tracking-wide mb-4">
+                Pattern detected
+              </span>
+              <h3 className="text-lg font-semibold text-white mb-2">Design-systems phrasing improves replies 2.3×</h3>
+              <p className="text-sm text-slate-400">Applications highlighting your design-systems work outperform others. Autopilot is prioritizing this angle.</p>
+            </div>
+
+            {/* Card 2 */}
+            <div className="bg-purple-500/10 border border-purple-500/20 rounded-2xl p-6 hover:border-purple-500/40 transition-colors duration-300">
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 text-xs font-mono font-bold text-purple-400 tracking-wide mb-4">
+                Best fit
+              </span>
+              <h3 className="text-lg font-semibold text-white mb-2">Dev-tools companies reply 3× faster to you</h3>
+              <p className="text-sm text-slate-400">Vercel, Linear, Warp, Replit. Autopilot is expanding sourcing in this vertical.</p>
+            </div>
+
+            {/* Card 3 */}
+            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-6 hover:border-emerald-500/40 transition-colors duration-300">
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-xs font-mono font-bold text-emerald-400 tracking-wide mb-4">
+                Timing
+              </span>
+              <h3 className="text-lg font-semibold text-white mb-2">Tuesday 8–10am submissions get best response</h3>
+              <p className="text-sm text-slate-400">Autopilot is scheduling more submissions inside your best window.</p>
+            </div>
+          </div>
+
+          {/* Moat Tagline */}
+          <p className="text-center text-slate-400 text-base md:text-lg font-medium">
+            This is the advantage no tool can match — because no tool owns the full loop.
+          </p>
         </div>
       </section>
 

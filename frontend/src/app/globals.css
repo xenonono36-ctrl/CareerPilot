@@ -47,8 +47,209 @@
   animation: border-orbit 6s linear infinite;
 }
 
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
+.animate-spin-reverse {
+  animation: spin-reverse 25s linear infinite;
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spin-reverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+/* AI Insights Engine - Reference Design Styles */
+:root {
+  --ap-insights-size: clamp(320px, 74vw, 580px);
+  --ap-insights-radius: calc(var(--ap-insights-size) * 0.38);
+}
+
+.ap-insights__engine {
+  position: relative;
+  width: var(--ap-insights-size);
+  height: var(--ap-insights-size);
+  margin: 0 auto;
+}
+
+.ap-insights__ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.ap-insights__ring-current {
+  fill: none;
+  stroke-width: 1.5;
+  stroke-dasharray: 8 4;
+  opacity: 0.3;
+  animation: ap-insights-dash 1s linear infinite;
+}
+
+@keyframes ap-insights-dash {
+  to {
+    stroke-dashoffset: -12;
+  }
+}
+
+.ap-insights__core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(90px, 14vw, 150px);
+  height: clamp(90px, 14vw, 150px);
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.35) 0%, rgba(167, 139, 250, 0.25) 50%, rgba(52, 211, 153, 0.15) 100%);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(12px);
+  box-shadow: 
+    0 0 30px rgba(96, 165, 250, 0.3),
+    0 0 60px rgba(167, 139, 250, 0.15),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  gap: 4px;
+  transition: all 0.3s ease;
+}
+
+.ap-insights__core:hover {
+  transform: translate(-50%, -50%) scale(1.05);
+  box-shadow: 
+    0 0 40px rgba(96, 165, 250, 0.5),
+    0 0 80px rgba(167, 139, 250, 0.25),
+    inset 0 0 25px rgba(255, 255, 255, 0.15);
+}
+
+.ap-insights__core-title {
+  font-size: clamp(11px, 1.6vw, 16px);
+  font-weight: 800;
+  color: white;
+  text-shadow: 0 2px 10px rgba(96, 165, 250, 0.5);
+  letter-spacing: 0.5px;
+}
+
+.ap-insights__core-sub {
+  font-size: clamp(8px, 1.1vw, 11px);
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.ap-insights__node {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(calc(var(--i) * (360deg / var(--ap-insights-total, 8)))) translateY(calc(-1 * var(--ap-insights-radius))) rotate(calc(var(--i) * (-360deg / var(--ap-insights-total, 8))));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  animation: ap-insights-fade-in 0.6s var(--ap-insights-stagger, 0s) both;
+}
+
+@keyframes ap-insights-fade-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(calc(var(--i) * (360deg / var(--ap-insights-total, 8)))) translateY(calc(-1 * var(--ap-insights-radius) - 20px)) rotate(calc(var(--i) * (-360deg / var(--ap-insights-total, 8))));
+  }
+}
+
+.ap-insights__node-step {
+  font-family: monospace;
+  font-size: clamp(8px, 1.2vw, 10px);
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.ap-insights__node--blue .ap-insights__node-step { color: #60a5fa; }
+.ap-insights__node--cyan .ap-insights__node-step { color: #22d3ee; }
+.ap-insights__node--purple .ap-insights__node-step { color: #a78bfa; }
+.ap-insights__node--pink .ap-insights__node-step { color: #f472b6; }
+.ap-insights__node--amber .ap-insights__node-step { color: #fbbf24; }
+.ap-insights__node--emerald .ap-insights__node-step { color: #34d399; }
+.ap-insights__node--rose .ap-insights__node-step { color: #fb7185; }
+.ap-insights__node--indigo .ap-insights__node-step { color: #818cf8; }
+
+.ap-insights__node-disc {
+  width: clamp(36px, 6vw, 52px);
+  height: clamp(36px, 6vw, 52px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ap-insights__node-disc svg {
+  width: clamp(18px, 3vw, 26px);
+  height: clamp(18px, 3vw, 26px);
+}
+
+.ap-insights__node:hover .ap-insights__node-disc {
+  transform: scale(1.15);
+}
+
+.ap-insights__node--blue .ap-insights__node-disc { background: #1e3a5f; border: 2px solid #60a5fa; box-shadow: 0 0 15px rgba(96, 165, 250, 0.4); }
+.ap-insights__node--blue .ap-insights__node-disc svg { color: #60a5fa; }
+
+.ap-insights__node--cyan .ap-insights__node-disc { background: #0a3d4a; border: 2px solid #22d3ee; box-shadow: 0 0 15px rgba(34, 211, 238, 0.4); }
+.ap-insights__node--cyan .ap-insights__node-disc svg { color: #22d3ee; }
+
+.ap-insights__node--purple .ap-insights__node-disc { background: #2d1f5e; border: 2px solid #a78bfa; box-shadow: 0 0 15px rgba(167, 139, 250, 0.4); }
+.ap-insights__node--purple .ap-insights__node-disc svg { color: #a78bfa; }
+
+.ap-insights__node--pink .ap-insights__node-disc { background: #4a1f3d; border: 2px solid #f472b6; box-shadow: 0 0 15px rgba(244, 114, 182, 0.4); }
+.ap-insights__node--pink .ap-insights__node-disc svg { color: #f472b6; }
+
+.ap-insights__node--amber .ap-insights__node-disc { background: #4a3a0a; border: 2px solid #fbbf24; box-shadow: 0 0 15px rgba(251, 191, 36, 0.4); }
+.ap-insights__node--amber .ap-insights__node-disc svg { color: #fbbf24; }
+
+.ap-insights__node--emerald .ap-insights__node-disc { background: #0a3d2a; border: 2px solid #34d399; box-shadow: 0 0 15px rgba(52, 211, 153, 0.4); }
+.ap-insights__node--emerald .ap-insights__node-disc svg { color: #34d399; }
+
+.ap-insights__node--rose .ap-insights__node-disc { background: #4a1f2a; border: 2px solid #fb7185; box-shadow: 0 0 15px rgba(251, 113, 133, 0.4); }
+.ap-insights__node--rose .ap-insights__node-disc svg { color: #fb7185; }
+
+.ap-insights__node--indigo .ap-insights__node-disc { background: #1f2d5e; border: 2px solid #818cf8; box-shadow: 0 0 15px rgba(129, 140, 248, 0.4); }
+.ap-insights__node--indigo .ap-insights__node-disc svg { color: #818cf8; }
+
+.ap-insights__node-body {
+  text-align: center;
+}
+
+.ap-insights__node-label {
+  font-size: clamp(10px, 1.5vw, 14px);
+  font-weight: 600;
+  color: white;
+}
+
+.ap-insights__node-desc {
+  font-size: clamp(8px, 1vw, 11px);
+  color: rgba(148, 163, 184, 0.8);
 }
