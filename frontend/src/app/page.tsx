@@ -408,7 +408,7 @@ export default function Home() {
               ].map((company, i) => (
                 <div key={`first-${i}`} className="flex-shrink-0 flex flex-col items-center gap-3 opacity-80 hover:opacity-100 transition-opacity duration-300">
                   <div className="w-20 h-20 flex items-center justify-center">
-                    <Image src={`/logos/${company.slug}.png`} alt={company.name} width={64} height={64} className="w-auto h-auto max-w-16 max-h-16 object-contain" />
+                    <Image src={`/logos/${company.slug}.png`} alt={company.name} width={64} height={64} className="w-16 h-16 object-contain" />
                   </div>
                   <span className="text-xs font-mono text-slate-400 tracking-wide">{company.name}</span>
                 </div>
@@ -437,7 +437,7 @@ export default function Home() {
               ].map((company, i) => (
                 <div key={`second-${i}`} className="flex-shrink-0 flex flex-col items-center gap-3 opacity-80 hover:opacity-100 transition-opacity duration-300">
                   <div className="w-20 h-20 flex items-center justify-center">
-                    <Image src={`/logos/${company.slug}.png`} alt={company.name} width={64} height={64} className="w-auto h-auto max-w-16 max-h-16 object-contain" />
+                    <Image src={`/logos/${company.slug}.png`} alt={company.name} width={64} height={64} className="w-16 h-16 object-contain" />
                   </div>
                   <span className="text-xs font-mono text-slate-400 tracking-wide">{company.name}</span>
                 </div>
@@ -557,7 +557,7 @@ export default function Home() {
               {/* Senior Frontend Engineer - Microsoft */}
               <div className="flex items-center gap-4 p-3 rounded-xl bg-[#0f1623] border border-slate-700/50 hover:border-cyan-500/30 transition-colors">
                 <div className="w-8 h-8 rounded-lg border border-slate-700 flex items-center justify-center bg-[#0a0f1a] overflow-hidden flex-shrink-0">
-                  <Image src="/logos/microsoft.png" alt="Microsoft" width={24} height={24} className="w-5 h-5 object-contain" />
+                  <Image src="/logos/microsoft.png" alt="Microsoft" width={20} height={20} className="w-5 h-5 object-contain" />
                 </div>
                 <span className="flex-1 text-sm font-medium text-slate-200">Senior Frontend Engineer · MICROSOFT</span>
                 <span className="text-xs text-slate-400">Just now</span>
@@ -567,7 +567,7 @@ export default function Home() {
               {/* Product Designer - Adobe */}
               <div className="flex items-center gap-4 p-3 rounded-xl bg-[#0f1623] border border-slate-700/50 hover:border-cyan-500/30 transition-colors">
                 <div className="w-8 h-8 rounded-lg border border-slate-700 flex items-center justify-center bg-[#0a0f1a] overflow-hidden flex-shrink-0">
-                  <Image src="/logos/adobe.png" alt="Adobe" width={24} height={24} className="w-5 h-5 object-contain" />
+                  <Image src="/logos/adobe.png" alt="Adobe" width={20} height={20} className="w-5 h-5 object-contain" />
                 </div>
                 <span className="flex-1 text-sm font-medium text-slate-200">Product Designer · ADOBE</span>
                 <span className="text-xs text-slate-400">2m ago</span>
@@ -577,7 +577,7 @@ export default function Home() {
               {/* Full-Stack Engineer - Google */}
               <div className="flex items-center gap-4 p-3 rounded-xl bg-[#0f1623] border border-slate-700/50 hover:border-cyan-500/30 transition-colors">
                 <div className="w-8 h-8 rounded-lg border border-slate-700 flex items-center justify-center bg-[#0a0f1a] overflow-hidden flex-shrink-0">
-                  <Image src="/logos/google.png" alt="Google" width={24} height={24} className="w-5 h-5 object-contain" />
+                  <Image src="/logos/google.png" alt="Google" width={20} height={20} className="w-5 h-5 object-contain" />
                 </div>
                 <span className="flex-1 text-sm font-medium text-slate-200">Full-Stack Engineer · GOOGLE</span>
                 <span className="text-xs text-slate-400">4m ago</span>
@@ -588,7 +588,7 @@ export default function Home() {
               {/* Recruiter reply - Delta */}
               <div className="flex items-center gap-4 p-3 rounded-xl bg-[#0f1623] border border-slate-700/50 hover:border-cyan-500/30 transition-colors">
                 <div className="w-8 h-8 rounded-lg border border-slate-700 flex items-center justify-center bg-[#0a0f1a] overflow-hidden flex-shrink-0">
-                  <Image src="/logos/delta.png" alt="Delta" width={24} height={24} className="w-5 h-5 object-contain" />
+                  <Image src="/logos/delta.png" alt="Delta" width={20} height={20} className="w-5 h-5 object-contain" />
                 </div>
                 <span className="flex-1 text-sm font-medium text-slate-200">Recruiter reply · DELTA</span>
                 <span className="text-xs text-slate-400">12m ago</span>
