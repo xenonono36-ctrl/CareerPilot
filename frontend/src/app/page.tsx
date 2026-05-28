@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import React, { useEffect, useRef } from 'react'
 import Link from 'next/link'
+import ScrollSequence from '@/components/ScrollSequence'
 import {
   FileText,
   Crosshair,
@@ -180,20 +181,21 @@ export default function Home() {
   };
 
   return (
-    <div className="relative max-w-7xl mx-auto px-6">
+    <>
+      <div className="relative max-w-7xl mx-auto px-6">
 
-      {/* Video Background with Glassmorphism */}
-      <div className="fixed inset-0 -z-10">
-        <video
-          className="w-full h-full object-cover"
-          autoPlay
-          muted
-          loop
-          playsInline
-          src="/AERUK-BG-ANIM.webm"
-        />
-        <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-3xl" />
-      </div>
+        {/* Video Background with Glassmorphism */}
+        <div className="fixed inset-0 -z-10">
+          <video
+            className="w-full h-full object-cover"
+            autoPlay
+            muted
+            loop
+            playsInline
+            src="/AERUK-BG-ANIM.webm"
+          />
+          <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-3xl" />
+        </div>
 
       {/* AERUKART GENUINE CURSOR EMULATION */}
       <style dangerouslySetInnerHTML={{
@@ -334,7 +336,7 @@ export default function Home() {
               <Activity className="w-4 h-4 text-cyan-500/60" />
               <span>CV PARSE EFFICIENCY</span>
             </div>
-            <div className="text-5xl md:text-6xl font-black text-cyan-400">95%+</div>
+            <div className="text-5xl md:text-6xl font-bold text-cyan-400 tabular-nums font-moonhouse">95%+</div>
             <div className="text-[11px] text-cyan-500/50 font-bold tracking-wider">STATUS [OPTIMAL]</div>
           </div>
 
@@ -343,7 +345,7 @@ export default function Home() {
               <Cpu className="w-4 h-4 text-purple-500/60" />
               <span>LATENCY RATIO</span>
             </div>
-            <div className="text-5xl md:text-6xl font-black text-purple-400">&lt;5ms</div>
+            <div className="text-5xl md:text-6xl font-bold text-purple-400 tabular-nums font-moonhouse">&lt;5ms</div>
             <div className="text-[11px] text-purple-500/50 font-bold tracking-wider">NODE RESPONSE TIME</div>
           </div>
 
@@ -352,7 +354,7 @@ export default function Home() {
               <ShieldCheck className="w-4 h-4 text-indigo-500/60" />
               <span>VECTOR MATCHING MULTIPLIER</span>
             </div>
-            <div className="text-5xl md:text-6xl font-black text-indigo-400">10x</div>
+            <div className="text-5xl md:text-6xl font-bold text-indigo-400 tabular-nums font-moonhouse">10x</div>
             <div className="text-[11px] text-indigo-500/50 font-bold tracking-wider">SEARCH ACCELERATION</div>
           </div>
 <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-cyan-500/10 text-center font-mono py-8 px-4"></div>
@@ -1256,7 +1258,7 @@ export default function Home() {
               <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-xs font-mono font-bold text-blue-400 tracking-wide mb-4">
                 Pattern detected
               </span>
-              <h3 className="text-lg font-semibold text-white mb-2">Design-systems phrasing improves replies 2.3×</h3>
+              <h3 className="text-lg font-semibold text-white mb-2">Design-systems phrasing improves replies 2.3x</h3>
               <p className="text-sm text-slate-400">Applications highlighting your design-systems work outperform others. Autopilot is prioritizing this angle.</p>
             </div>
 
@@ -1286,7 +1288,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Back to Top Button - Only visible when scrolled to last section */}
+      {/* Back to Top Button */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         className="fixed bottom-8 right-8 z-50 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover:w-14 hover:h-14 group"
@@ -1299,12 +1301,14 @@ export default function Home() {
         }}
         aria-label="Scroll to top"
       >
-        {/* Hover glow overlay */}
         <span className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-40 transition-opacity duration-300" style={{ background: 'rgba(6, 182, 212, 0.4)' }} />
-        {/* Top arrow icon */}
         <ArrowUp className="relative z-10 w-5 h-5 text-cyan-300 group-hover:text-cyan-100 group-hover:w-6 group-hover:h-6 transition-all duration-300" />
       </button>
 
-    </div>
+      </div>
+
+      {/* SCROLL-DRIVEN IMAGE SEQUENCE - Full Width */}
+      <ScrollSequence />
+    </>
   )
 } 

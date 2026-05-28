@@ -450,3 +450,14 @@ html {
   font-size: clamp(8px, 1vw, 11px);
   color: rgba(148, 163, 184, 0.8);
 }
+
+/* ============================================
+   SCROLL-DRIVEN IMAGE SEQUENCE ANIMATION
+   ============================================ */
+
+/* Optional progress indicator styling - can be customized or removed */
+.scroll-sequence-progress {
+  font-family: monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}

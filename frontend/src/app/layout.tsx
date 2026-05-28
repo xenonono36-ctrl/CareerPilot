@@ -24,6 +24,17 @@ export default function RootLayout({
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
           <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Basenji&display=swap" rel="stylesheet" />
           
+          {/* Orbitron Font - Google Fonts */}
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+          <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
+          <style>{`
+            .font-moonhouse {
+              font-family: 'Orbitron', sans-serif !important;
+              font-weight: 700;
+            }
+          `}</style>
+          
           {/* Custom injection layer for advanced sci-fi scanning & smooth rotation mechanics */}
           <style>{`
             @keyframes smooth-spin {
@@ -82,13 +93,12 @@ export default function RootLayout({
             </div>
           </header>
 
-          {/* APP INTERACTIVE SURFACE */}
+          APP INTERACTIVE SURFACE
           <main>
             {children}
           </main>
-
-          {/* MATRIX COMPLIANT FOOTER */}
-          <footer className="border-t border-cyan-500/5 bg-[#010409]/80 text-slate-600 mt-24">
+          {/* MATRIX COMPLIANT FOOTER
+          <footer className="relative z-10 border-t border-cyan-500/5 bg-[#010409]/80 text-slate-600 mt-24">
             <div className="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row items-center justify-between gap-6 text-xs font-mono tracking-widest">
               <div className="flex items-center gap-2 text-slate-400">
                 <Compass className="w-4 h-4 text-cyan-500/60 animate-pulse" />
@@ -98,7 +108,7 @@ export default function RootLayout({
                 &copy; 2026 CAREERPILOT.
               </div>
             </div>
-          </footer>
+          </footer> */}
 
           <Toaster position="top-right" richColors />
           
