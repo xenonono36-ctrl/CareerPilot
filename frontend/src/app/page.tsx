@@ -4,6 +4,10 @@ import Image from 'next/image'
 import React, { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
+import featureImg1 from '@/1.png'
+import featureImg2 from '@/2.png'
+import featureImg3 from '@/3.png'
+import featureImg4 from '@/4.png'
 import {
   FileText,
   Crosshair,
@@ -219,6 +223,29 @@ export default function Home() {
           dot.classList.remove('active');
         }
       });
+
+      // Update background images
+      const bgImages = document.querySelectorAll('.feature-bg-1, .feature-bg-2, .feature-bg-3, .feature-bg-4');
+      bgImages.forEach((img, index) => {
+        const el = img as HTMLElement;
+        if (index === activeIndex) {
+          el.style.opacity = '0.2';
+        } else {
+          el.style.opacity = '0';
+        }
+      });
+
+      // Update CORE FEATURES text color based on active point
+      const textColors = [
+        'text-cyan-400',
+        'text-purple-400',
+        'text-emerald-400',
+        'text-amber-400'
+      ];
+      const coreFeaturesTitle = document.querySelector('.core-features-title');
+      if (coreFeaturesTitle && textColors[activeIndex]) {
+        coreFeaturesTitle.className = `text-6xl md:text-8xl lg:text-9xl font-black tracking-tight leading-none core-features-title ${textColors[activeIndex]}`;
+      }
     };
 
     window.addEventListener('scroll', handlePointsScroll, { passive: true });
@@ -286,6 +313,17 @@ export default function Home() {
           box-shadow: 0 0 12px 3px rgba(6, 182, 212, 0.5), 0 0 25px 6px rgba(6, 182, 212, 0.3) !important;
           backdrop-filter: blur(8px) saturate(180%) !important;
           -webkit-backdrop-filter: blur(8px) saturate(180%) !important;
+        }
+        
+        /* Progress dots - static by default */
+        .progress-dot {
+          background-color: rgba(255, 255, 255, 0.2);
+          transition: transform 0.4s ease;
+        }
+        
+        /* Active dot extends width - no color change */
+        .progress-dot.active {
+          width: 48px;
         }
       `}} />
 
@@ -513,6 +551,11 @@ export default function Home() {
           @keyframes scroll {
             0% { transform: translateX(0); }
             100% { transform: translateX(-50%); }
+          }
+          @keyframes gradient-shift {
+            0% { background-position: 0% center; }
+            50% { background-position: 100% center; }
+            100% { background-position: 0% center; }
           }
         `}} />
         </section>
@@ -743,10 +786,17 @@ export default function Home() {
               backgroundImage: `linear-gradient(rgba(6,182,212,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(6,182,212,0.3) 1px, transparent 1px)`,
               backgroundSize: '60px 60px'
             }} />
+            {/* Dynamic Background Images */}
+            <Image src={featureImg1} alt="" fill className="object-cover opacity-20 transition-opacity duration-700 feature-bg-1 pointer-events-none" />
+            <Image src={featureImg2} alt="" fill className="object-cover opacity-0 transition-opacity duration-700 feature-bg-2 pointer-events-none" />
+            <Image src={featureImg3} alt="" fill className="object-cover opacity-0 transition-opacity duration-700 feature-bg-3 pointer-events-none" />
+            <Image src={featureImg4} alt="" fill className="object-cover opacity-0 transition-opacity duration-700 feature-bg-4 pointer-events-none" />
             {/* Top glow */}
             <div className="absolute top-0 left-1/4 -translate-x-1/2 w-[600px] h-[300px] bg-cyan-500/10 blur-[120px] rounded-full" />
             {/* Bottom glow */}
             <div className="absolute bottom-0 right-1/4 translate-x-1/2 w-[500px] h-[250px] bg-purple-500/10 blur-[100px] rounded-full" />
+            {/* Overlay to ensure text readability */}
+            <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/60 to-slate-950/30" />
           </div>
 
           {/* Large Background Number */}
@@ -759,14 +809,15 @@ export default function Home() {
             <div className="w-full pl-8 md:pl-16 lg:pl-24">
               
               {/* Section Label */}
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-12 h-px bg-cyan-500/50"></div>
-                <span className="text-xs md:text-sm font-mono text-cyan-500/70 tracking-widest uppercase">Core Features</span>
+              <div className="mb-8">
+                <h2 className="text-6xl md:text-8xl lg:text-9xl font-black tracking-tight leading-none core-features-title text-cyan-400" style={{ fontFamily: 'var(--font-bebas-neue), "Bebas Neue", sans-serif' }}>
+                  CORE FEATURES
+                </h2>
               </div>
 
               {/* Progress Dots */}
               <div className="flex gap-3 mb-12">
-                <div className="progress-dot w-8 h-1 rounded-full bg-cyan-500 active"></div>
+                <div className="progress-dot w-8 h-1 rounded-full bg-white/20"></div>
                 <div className="progress-dot w-8 h-1 rounded-full bg-white/20"></div>
                 <div className="progress-dot w-8 h-1 rounded-full bg-white/20"></div>
                 <div className="progress-dot w-8 h-1 rounded-full bg-white/20"></div>
