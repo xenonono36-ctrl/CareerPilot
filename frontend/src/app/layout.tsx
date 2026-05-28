@@ -59,15 +59,15 @@ export default function RootLayout({
             }
           `}</style>
         </head>
-        <body className="bg-[#030712] text-slate-100 font-['Bebas_Neue'] selection:bg-cyan-500/30 selection:text-white overflow-x-hidden min-h-screen antialiased relative" style={{ letterSpacing: '0.05em' }}>
+        <body className="bg-[#030712] text-slate-100 font-['Bebas_Neue'] selection:bg-cyan-500/30 selection:text-white antialiased relative m-0 p-0 overflow-x-hidden" style={{ letterSpacing: '0.05em' }}>
           
           {/* Background Cyber Grid Matrix & Radial Plasma Glow */}
-          <div className="absolute inset-0 cyber-grid pointer-events-none -z-20" />
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[700px] bg-[radial-gradient(circle_at_50%_-10%,rgba(6,182,212,0.15)_0%,rgba(139,92,246,0.05)_45%,transparent 70%)] pointer-events-none -z-10 animate-pulse-scan" />
+          <div className="fixed inset-0 cyber-grid pointer-events-none -z-20" />
+          <div className="fixed top-0 left-0 w-full h-[700px] bg-[radial-gradient(circle_at_50%_-10%,rgba(6,182,212,0.15)_0%,rgba(139,92,246,0.05)_45%,transparent_70%)] pointer-events-none -z-10 animate-pulse-scan" />
 
           {/* STICKY SCI-FI HEADER */}
-          <header className="sticky top-0 z-50 backdrop-blur-xl bg-[#030712]/60 border-b border-cyan-500/10 transition-all duration-300">
-            <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <header className="sticky top-0 z-50 backdrop-blur-2xl bg-white/[0.03] border-b border-cyan-500/20 transition-all duration-300">
+            <div className="w-full px-6 h-20 flex items-center justify-between">
               
               {/* Brand Core */}
               <Link href="/" className="flex items-center gap-3 group">

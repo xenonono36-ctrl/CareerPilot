@@ -1,9 +1,10 @@
 'use client';
 
 import Image from 'next/image'
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
+import { motion, AnimatePresence } from 'framer-motion'
 import featureImg1 from '@/1.png'
 import featureImg2 from '@/2.png'
 import featureImg3 from '@/3.png'
@@ -1071,7 +1072,7 @@ export default function Home() {
       </section>
 
       {/* AUTO-APPLY SECTION */}
-      <section data-scroll-group className="py-20 md:py-28 relative overflow-hidden">
+      <section data-scroll-group className="py-40 md:py-52 relative overflow-hidden">
         {/* Parallax background accents */}
         <div 
           className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 -z-10 w-[500px] h-[500px] bg-blue-500/5 blur-[100px] rounded-full pointer-events-none"
@@ -1520,7 +1521,7 @@ export default function Home() {
               <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 text-xs font-mono font-bold text-purple-400 tracking-wide mb-4">
                 Best fit
               </span>
-              <h3 className="text-lg font-semibold text-white mb-2">Dev-tools companies reply 3× faster to you</h3>
+              <h3 className="text-lg font-semibold text-white mb-2">Dev-tools companies reply 3x faster to you</h3>
               <p className="text-sm text-slate-400">Vercel, Linear, Warp, Replit. Autopilot is expanding sourcing in this vertical.</p>
             </div>
 
@@ -1564,4 +1565,8 @@ export default function Home() {
       <ScrollSequence />
     </>
   )
-} 
+}
+
+
+
+ 
