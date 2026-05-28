@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import React, { useEffect, useRef } from 'react'
 import Link from 'next/link'
-import ScrollSequence from '@/components/ScrollSequence'
+import dynamic from 'next/dynamic'
 import {
   FileText,
   Crosshair,
@@ -11,14 +11,20 @@ import {
   CheckSquare,
   ArrowRight,
   ArrowUp,
-  Zap,
   Cpu,
   ShieldCheck,
   Activity,
+  Zap,
   Search,
   Rocket,
-  Mail
+  Mail,
 } from 'lucide-react'
+
+// Lazy load the heavy scroll sequence component
+const ScrollSequence = dynamic(() => import('@/components/ScrollSequence'), {
+  ssr: false,
+  loading: () => <div style={{ height: '250vh', background: '#030712' }} />
+})
 
 export default function Home() {
   const dotRef = useRef<HTMLDivElement>(null);
@@ -142,21 +148,11 @@ export default function Home() {
       setMousePos(null);
     };
 
-    // Back to top button visibility
-    const handleScroll = () => {
-      const scrollHeight = document.documentElement.scrollHeight;
-      const scrollTop = document.documentElement.scrollTop;
-      const clientHeight = document.documentElement.clientHeight;
-      // Show button when scrolled to last 300px
-      setShowBackToTop(scrollTop + clientHeight >= scrollHeight - 300);
-    };
-
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mouseup', handleMouseUp);
     window.addEventListener('mouseover', handleMouseOver);
     window.addEventListener('mouseout', handleMouseOut);
-    window.addEventListener('scroll', handleScroll);
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
@@ -164,7 +160,72 @@ export default function Home() {
       window.removeEventListener('mouseup', handleMouseUp);
       window.removeEventListener('mouseover', handleMouseOver);
       window.removeEventListener('mouseout', handleMouseOut);
-      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  // Points Section Scroll Animation - ciridae.com style
+  useEffect(() => {
+    const handlePointsScroll = () => {
+      const pointsSection = document.querySelector('.points-container') as HTMLElement;
+      const pointCards = document.querySelectorAll('.point-card');
+      const progressDots = document.querySelectorAll('.progress-dot');
+      const bigNumber = document.querySelector('.big-number');
+      
+      if (!pointsSection || pointCards.length === 0) return;
+
+      const rect = pointsSection.getBoundingClientRect();
+      const sectionHeight = pointsSection.offsetHeight;
+      const viewportHeight = window.innerHeight;
+      
+      // Calculate scroll progress through the points section
+      const scrollRange = sectionHeight - viewportHeight;
+      const currentScroll = -rect.top;
+      const progress = Math.min(Math.max(currentScroll / scrollRange, 0), 1);
+
+      // Determine which point should be active (1-4)
+      const totalPoints = pointCards.length;
+      const rawIndex = progress * totalPoints;
+      const activeIndex = Math.min(Math.floor(rawIndex), totalPoints - 1);
+      const currentPoint = activeIndex + 1;
+      
+      // Update big number
+      if (bigNumber) {
+        bigNumber.textContent = `0${currentPoint}`;
+      }
+
+      // Update card visibility with smooth transitions
+      pointCards.forEach((card, index) => {
+        const cardEl = card as HTMLElement;
+        if (index === activeIndex) {
+          cardEl.classList.add('active');
+          cardEl.style.opacity = '1';
+          cardEl.style.transform = 'translateX(0) scale(1)';
+        } else if (index < activeIndex) {
+          cardEl.classList.remove('active');
+          cardEl.style.opacity = '0';
+          cardEl.style.transform = 'translateX(-100px) scale(0.95)';
+        } else {
+          cardEl.classList.remove('active');
+          cardEl.style.opacity = '0';
+          cardEl.style.transform = 'translateX(100px) scale(0.95)';
+        }
+      });
+
+      // Update progress dots
+      progressDots.forEach((dot, index) => {
+        if (index === activeIndex) {
+          dot.classList.add('active');
+        } else {
+          dot.classList.remove('active');
+        }
+      });
+    };
+
+    window.addEventListener('scroll', handlePointsScroll, { passive: true });
+    handlePointsScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handlePointsScroll);
     };
   }, []);
 
@@ -670,8 +731,149 @@ export default function Home() {
         </div>
       </section>
 
+      {/* POINTS SECTION - CIRIDAE.COM STYLE STICKY SCROLL - Full Width */}
+      <section className="points-container relative mt-20" style={{ height: '400vh', width: '100vw', marginLeft: 'calc(-50vw + 50%)' }}>
+        {/* Sticky Container */}
+        <div className="points-sticky-wrapper relative" style={{ height: '100vh', position: 'sticky', top: '0', overflow: 'hidden', width: '100vw', left: '0' }}>
+          
+          {/* Full-page Background - extends beyond parent container */}
+          <div className="absolute inset-0 z-0 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+            {/* Subtle grid pattern overlay */}
+            <div className="absolute inset-0 opacity-[0.03]" style={{
+              backgroundImage: `linear-gradient(rgba(6,182,212,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(6,182,212,0.3) 1px, transparent 1px)`,
+              backgroundSize: '60px 60px'
+            }} />
+            {/* Top glow */}
+            <div className="absolute top-0 left-1/4 -translate-x-1/2 w-[600px] h-[300px] bg-cyan-500/10 blur-[120px] rounded-full" />
+            {/* Bottom glow */}
+            <div className="absolute bottom-0 right-1/4 translate-x-1/2 w-[500px] h-[250px] bg-purple-500/10 blur-[100px] rounded-full" />
+          </div>
+
+          {/* Large Background Number */}
+          <div className="big-number absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[20vw] font-black text-white/[0.03] select-none pointer-events-none z-20" style={{ fontFamily: 'var(--font-bebas-neue), "Bebas Neue", sans-serif' }}>
+            01
+          </div>
+
+          {/* Content Area - Full Width */}
+          <div className="relative z-30 h-full flex flex-col justify-center w-full">
+            <div className="w-full pl-8 md:pl-16 lg:pl-24">
+              
+              {/* Section Label */}
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-12 h-px bg-cyan-500/50"></div>
+                <span className="text-xs md:text-sm font-mono text-cyan-500/70 tracking-widest uppercase">Core Features</span>
+              </div>
+
+              {/* Progress Dots */}
+              <div className="flex gap-3 mb-12">
+                <div className="progress-dot w-8 h-1 rounded-full bg-cyan-500 active"></div>
+                <div className="progress-dot w-8 h-1 rounded-full bg-white/20"></div>
+                <div className="progress-dot w-8 h-1 rounded-full bg-white/20"></div>
+                <div className="progress-dot w-8 h-1 rounded-full bg-white/20"></div>
+              </div>
+
+              {/* Point Cards - Single card visible at a time */}
+              <div className="relative h-[400px] md:h-[350px]">
+                
+                {/* Point 1 - Smart Discovery */}
+                <div className="point-card absolute inset-0 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] opacity-0 translate-x-0 scale-100" data-point="1">
+                  <div className="flex flex-col md:flex-row gap-8 md:gap-16 items-start">
+                    <div className="flex-1">
+                      <div className="text-5xl md:text-7xl font-black text-white mb-4" style={{ fontFamily: 'var(--font-bebas-neue), "Bebas Neue", sans-serif' }}>
+                        01
+                      </div>
+                      <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">Intelligent Job Discovery</h3>
+                      <p className="text-lg md:text-xl text-slate-400 leading-relaxed max-w-lg">
+                        CareerPilot continuously scans thousands of job postings across the web, matching opportunities to your unique skill profile and career goals.
+                      </p>
+                    </div>
+                    <div className="w-full md:w-80 h-48 md:h-64 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-500/10 border border-cyan-500/30 flex items-center justify-center">
+                      <svg className="w-24 h-24 text-cyan-400/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.3-4.3"></path>
+                        <path d="M11 8v6"></path>
+                        <path d="M8 11h6"></path>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Point 2 - Resume Tailoring */}
+                <div className="point-card absolute inset-0 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] opacity-0 translate-x-[100px] scale-100" data-point="2">
+                  <div className="flex flex-col md:flex-row gap-8 md:gap-16 items-start">
+                    <div className="flex-1">
+                      <div className="text-5xl md:text-7xl font-black text-white mb-4" style={{ fontFamily: 'var(--font-bebas-neue), "Bebas Neue", sans-serif' }}>
+                        02
+                      </div>
+                      <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">Instant Resume Tailoring</h3>
+                      <p className="text-lg md:text-xl text-slate-400 leading-relaxed max-w-lg">
+                        Every resume and cover letter gets AI-tailored to match each job description's exact requirements. Perfectly formatted applications in seconds.
+                      </p>
+                    </div>
+                    <div className="w-full md:w-80 h-48 md:h-64 rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/10 border border-purple-500/30 flex items-center justify-center">
+                      <svg className="w-24 h-24 text-purple-400/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
+                        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                        <polyline points="14,2 14,8 20,8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <line x1="10" y1="9" x2="8" y2="9"></line>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Point 3 - Auto Apply */}
+                <div className="point-card absolute inset-0 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] opacity-0 translate-x-[100px] scale-100" data-point="3">
+                  <div className="flex flex-col md:flex-row gap-8 md:gap-16 items-start">
+                    <div className="flex-1">
+                      <div className="text-5xl md:text-7xl font-black text-white mb-4" style={{ fontFamily: 'var(--font-bebas-neue), "Bebas Neue", sans-serif' }}>
+                        03
+                      </div>
+                      <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">Automated Application Submission</h3>
+                      <p className="text-lg md:text-xl text-slate-400 leading-relaxed max-w-lg">
+                        Server-side submission engine handles complex application forms, file uploads, and email verifications automatically. Apply to hundreds of jobs effortlessly.
+                      </p>
+                    </div>
+                    <div className="w-full md:w-80 h-48 md:h-64 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/10 border border-emerald-500/30 flex items-center justify-center">
+                      <svg className="w-24 h-24 text-emerald-400/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
+                        <path d="m22 2-7 20-4-9-9-4Z"></path>
+                        <path d="M22 2 11 13"></path>
+                        <path d="M8 22V12h4"></path>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Point 4 - Tracking */}
+                <div className="point-card absolute inset-0 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] opacity-0 translate-x-[100px] scale-100" data-point="4">
+                  <div className="flex flex-col md:flex-row gap-8 md:gap-16 items-start">
+                    <div className="flex-1">
+                      <div className="text-5xl md:text-7xl font-black text-white mb-4" style={{ fontFamily: 'var(--font-bebas-neue), "Bebas Neue", sans-serif' }}>
+                        04
+                      </div>
+                      <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">Real-Time Application Tracking</h3>
+                      <p className="text-lg md:text-xl text-slate-400 leading-relaxed max-w-lg">
+                        Every recruiter reply gets tracked and analyzed. Never lose track of an application again with automated status updates and follow-up reminders.
+                      </p>
+                    </div>
+                    <div className="w-full md:w-80 h-48 md:h-64 rounded-2xl bg-gradient-to-br from-amber-500/20 to-orange-500/10 border border-amber-500/30 flex items-center justify-center">
+                      <svg className="w-24 h-24 text-amber-400/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
+                        <path d="M12 20h9"></path>
+                        <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+                        <path d="m15 5 3 3"></path>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CORE SYNC CALL TO ACTION ACCELERATOR */}
-      <section data-scroll className="py-16 relative">
+      <section data-scroll className="py-16 relative mt-48">
         {/* Parallax background accent */}
         <div 
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 w-[700px] h-[400px] bg-cyan-500/10 blur-[130px] pointer-events-none rounded-full"

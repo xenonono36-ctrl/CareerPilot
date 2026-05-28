@@ -461,3 +461,51 @@ html {
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
+
+/* ============================================
+   POINTS SECTION - CIRIDAE.COM STYLE
+   Sticky scroll with single card visible
+   ============================================ */
+
+.points-container {
+  position: relative;
+}
+
+.points-sticky-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.point-card {
+  will-change: transform, opacity;
+}
+
+/* Progress dots animation */
+.progress-dot {
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.progress-dot.active {
+  background: rgb(6 182 212);
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
+  transform: scaleX(1.2);
+}
+
+/* Big number parallax */
+.big-number {
+  transition: transform 0.1s ease-out;
+  font-family: 'Bebas Neue', sans-serif;
+}
+
+/* Card entrance animations */
+.point-card[data-point="1"] { transform: translateX(0); }
+.point-card[data-point="2"] { transform: translateX(100px); }
+.point-card[data-point="3"] { transform: translateX(100px); }
+.point-card[data-point="4"] { transform: translateX(100px); }
+
+@media (max-width: 768px) {
+  .point-card > div {
+    flex-direction: column !important;
+  }
+}

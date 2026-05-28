@@ -16,22 +16,66 @@ const SCROLL_DURATION_VH = 250;
 /** LERP factor - lower = smoother/slower, higher = snappier (0.02-0.15) */
 const LERP_SPEED = 0.08;
 
+/** Preload queue size - load this many frames ahead */
+const PRELOAD_AHEAD = 5;
+
+/** Batch preload size */
+const PRELOAD_BATCH = 3;
+
 // ============================================
-// IMAGE PRELOADING
+// IMAGE PRELOADING - Lazy loading
 // ============================================
 
-const preloadImages = (paths: string[]): Promise<void> => {
+const imageCache = new Set<string>();
+let preloadQueue: string[] = [];
+let isPreloading = false;
+
+const preloadImage = (path: string): Promise<void> => {
   return new Promise((resolve) => {
-    let loaded = 0;
-    if (paths.length === 0) return resolve();
-    
-    paths.forEach((path) => {
-      const img = new Image();
-      img.onload = img.onerror = () => {
-        if (++loaded === paths.length) resolve();
-      };
-      img.src = path;
-    });
+    if (imageCache.has(path)) {
+      resolve();
+      return;
+    }
+    const img = new Image();
+    img.onload = img.onerror = () => {
+      imageCache.add(path);
+      resolve();
+    };
+    img.src = path;
+  });
+};
+
+const preloadBatch = async (paths: string[]): Promise<void> => {
+  const unloaded = paths.filter(p => !imageCache.has(p));
+  if (unloaded.length === 0) return;
+  
+  const batch = unloaded.slice(0, PRELOAD_BATCH);
+  await Promise.all(batch.map(preloadImage));
+  
+  // Continue with next batch if more pending
+  if (unloaded.length > PRELOAD_BATCH) {
+    setTimeout(() => preloadBatch(unloaded.slice(PRELOAD_BATCH)), 16);
+  }
+};
+
+const queuePreload = (targetFrame: number): void => {
+  if (isPreloading) return;
+  
+  const startIdx = Math.max(0, targetFrame - 1);
+  const endIdx = Math.min(TOTAL_FRAMES, targetFrame + PRELOAD_AHEAD);
+  const needed = FRAME_PATHS.slice(startIdx, endIdx);
+  
+  const unloaded = needed.filter(p => !imageCache.has(p));
+  if (unloaded.length === 0) return;
+  
+  isPreloading = true;
+  preloadBatch(unloaded).then(() => {
+    isPreloading = false;
+    // Check if more frames needed
+    const stillNeeded = FRAME_PATHS.slice(startIdx, endIdx).filter(p => !imageCache.has(p));
+    if (stillNeeded.length > 0) {
+      queuePreload(targetFrame);
+    }
   });
 };
 
@@ -57,15 +101,16 @@ export default function ScrollSequence() {
   const rafRef = useRef<number | null>(null);
   const isActiveRef = useRef(false);
 
-  // Preload images
+  // Initialize with first frame and start lazy loading
   useEffect(() => {
-    preloadImages(FRAME_PATHS).then(() => {
-      setIsLoaded(true);
-      if (imageRef.current) imageRef.current.src = FRAME_PATHS[0];
-    });
+    if (imageRef.current) imageRef.current.src = FRAME_PATHS[0];
+    // Start preloading immediately
+    queuePreload(0);
+    // Preload frame 2 onwards in batches
+    preloadBatch(FRAME_PATHS.slice(1)).then(() => setIsLoaded(true));
   }, []);
 
-  // Calculate target frame from scroll
+  // Calculate target frame from scroll and trigger lazy loading
   const updateTargetFrame = useCallback(() => {
     if (!containerRef.current || !isLoaded) return;
     
@@ -73,6 +118,9 @@ export default function ScrollSequence() {
     const vh = window.innerHeight;
     const progress = clamp(-rect.top / (rect.height - vh), 0, 1);
     targetFrameRef.current = clamp(Math.floor(progress * TOTAL_FRAMES) + 1, 1, TOTAL_FRAMES);
+    
+    // Trigger lazy preload of upcoming frames
+    queuePreload(targetFrameRef.current);
   }, [isLoaded]);
 
   // Smooth RAF animation loop (always running)
@@ -91,10 +139,10 @@ export default function ScrollSequence() {
       currentFrameRef.current = target;
     }
 
-    // Update image
+    // Update image (with caching to avoid unnecessary DOM updates)
     const frameIdx = clamp(Math.round(currentFrameRef.current) - 1, 0, TOTAL_FRAMES - 1);
     const expectedSrc = FRAME_PATHS[frameIdx];
-    if (imageRef.current.src !== expectedSrc) {
+    if (imageRef.current && imageRef.current.src !== expectedSrc && imageCache.has(expectedSrc)) {
       imageRef.current.src = expectedSrc;
     }
 

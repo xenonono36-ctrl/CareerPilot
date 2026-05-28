@@ -93,7 +93,7 @@ export default function RootLayout({
             </div>
           </header>
 
-          APP INTERACTIVE SURFACE
+          {/* APP INTERACTIVE SURFACE */}
           <main>
             {children}
           </main>
