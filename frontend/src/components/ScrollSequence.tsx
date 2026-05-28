@@ -146,6 +146,39 @@ export default function ScrollSequence() {
             willChange: 'contents', transform: 'translateZ(0)',
           }}
         />
+
+        {/* Glass effect footer bar */}
+        <div
+          className="absolute bottom-0 left-0 right-0 h-16 flex items-center justify-between px-8 z-20"
+          style={{
+            background: 'rgba(3,7,18,0.6)',
+            backdropFilter: 'blur(20px)',
+            borderTop: '1px solid rgba(6,182,212,0.2)',
+          }}
+        >
+          <span
+            style={{
+              fontFamily: 'Orbitron, sans-serif',
+              fontWeight: 700,
+              fontSize: '14px',
+              color: 'rgba(6,182,212,0.9)',
+              letterSpacing: '0.15em',
+            }}
+          >
+            CAREERPILOT
+          </span>
+          <span
+            style={{
+              fontFamily: 'Orbitron, sans-serif',
+              fontWeight: 400,
+              fontSize: '12px',
+              color: 'rgba(100,116,139,0.8)',
+              letterSpacing: '0.1em',
+            }}
+          >
+           &copy; CareerPilot 2026
+          </span>
+        </div>
       </div>
     </div>
   );
