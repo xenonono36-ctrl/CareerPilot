@@ -106,6 +106,9 @@ export default function ChatPage() {
     setInput('')
     setLoading(true)
 
+    // Capture current messages before async operation
+    const messagesAtSend = [...messages, userMessage]
+
     // Mock AI response
     setTimeout(() => {
       const responses = [
@@ -113,7 +116,7 @@ export default function ChatPage() {
         "Great question! For your target role as a Full Stack Developer, I'd recommend focusing on:\n\n- Docker & Kubernetes for deployment\n- GraphQL APIs\n- Testing best practices\n\nI've created a learning roadmap for you. Want to see it?",
         "I can help you generate a cover letter for that position. To make it personalized, could you share the job description? Or would you like me to use your existing CV data to create a generic template first?"
       ]
-      
+
       const aiMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
@@ -121,9 +124,8 @@ export default function ChatPage() {
         timestamp: new Date(),
         suggestedActions: ['Yes, help me', 'Show me more', 'Skip']
       }
-      
-      const currentMessages = useChatStore(state => state.messages);
-      setMessages([...currentMessages, aiMessage]);
+
+      setMessages([...messagesAtSend, aiMessage])
       setLoading(false)
     }, 1500)
   }

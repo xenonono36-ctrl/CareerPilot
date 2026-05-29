@@ -1549,7 +1549,7 @@ export default function Home() {
         style={{
           background: '#0a0a0a',
           boxShadow: '0 0 15px rgba(6, 182, 212, 0.2), 0 0 30px rgba(6, 182, 212, 0.1)',
-          opacity: showBackToTop ? 1 : 0,
+          opacity: showBackToTop ? 1 : 0,               
           transform: showBackToTop ? 'translateY(0)' : 'translateY(20px)',
           pointerEvents: showBackToTop ? 'auto' : 'none',
         }}

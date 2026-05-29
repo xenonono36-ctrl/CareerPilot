@@ -12,9 +12,14 @@ from app.api.routes import cv, jobs, chat, tasks, applications
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan handler."""
-    # Startup
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    # Startup - try to initialize DB but don't fail if unavailable
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        print("✓ Database connected and tables initialized")
+    except Exception as e:
+        print(f"⚠ Database not available: {e}")
+        print("  App will run without database connection")
     yield
     # Shutdown
     await engine.dispose()
