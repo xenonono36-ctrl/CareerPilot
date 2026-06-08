@@ -15,8 +15,11 @@ import axios, { type AxiosInstance, type InternalAxiosRequestConfig } from 'axio
  */
 function resolveApiUrl(): string {
   const useRewrites = (process.env.NEXT_PUBLIC_USE_REWRITES ?? 'true').toLowerCase() !== 'false'
-  // Vercel injects NEXT_PUBLIC_VERCEL_ENV on every deploy (production|preview|development).
-  const isVercel = !!process.env.NEXT_PUBLIC_VERCEL_ENV
+  // Vercel injects NEXT_PUBLIC_VERCEL_URL on every build (production + previews).
+  // Examples: "careerpilot.vercel.app", "careerpilot-git-main-user.vercel.app".
+  // It's the canonical "this bundle was built on Vercel" signal.
+  const vercelUrl = process.env.NEXT_PUBLIC_VERCEL_URL
+  const isVercel = !!vercelUrl && vercelUrl.length > 0
 
   if (useRewrites && isVercel) {
     return '' // same-origin → Vercel rewrite handles /api/*
