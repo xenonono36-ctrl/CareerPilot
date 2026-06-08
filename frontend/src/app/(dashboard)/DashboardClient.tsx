@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useUser } from '@clerk/nextjs'
-import { 
-  LayoutDashboard, 
-  Briefcase, 
-  MessageSquare, 
+import {
+  LayoutDashboard,
+  Briefcase,
+  MessageSquare,
   CheckSquare,
   Settings,
   LogOut,
@@ -15,11 +15,32 @@ import {
   Calendar,
   ChevronRight,
   FileText,
-  X
+  X,
+  Loader2
 } from 'lucide-react'
 import Link from 'next/link'
+import apiClient from '@/lib/api'
 
-// Placeholder for actual components - will be created
+interface KanbanData {
+  applied: any[]
+  interviewing: any[]
+  offer: any[]
+  rejected: any[]
+}
+
+interface TaskStats {
+  total: number
+  pending: number
+  completed: number
+}
+
+interface CVSummary {
+  cv_id: string
+  filename: string
+  status: string
+  skills: string[]
+  experience_years: number | null
+}
 const StatCard = ({ label, value, icon: Icon, trend }: any) => (
   <div className="bg-white rounded-xl border border-slate-200 p-6">
     <div className="flex items-start justify-between">
@@ -44,8 +65,62 @@ export default function DashboardClient() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [activeTab, setActiveTab] = useState('overview')
 
+  const [kanban, setKanban] = useState<KanbanData | null>(null)
+  const [taskStats, setTaskStats] = useState<TaskStats | null>(null)
+  const [cv, setCv] = useState<CVSummary | null>(null)
+  const [statsLoading, setStatsLoading] = useState(true)
+
   const userName = user?.firstName || 'there'
   const initials = user?.firstName?.[0] || user?.emailAddresses[0]?.emailAddress?.[0] || 'U'
+
+  const fetchStats = useCallback(async () => {
+    try {
+      setStatsLoading(true)
+      const [appsRes, tasksRes, cvRes] = await Promise.allSettled([
+        apiClient.get<KanbanData>('/api/applications'),
+        apiClient.get<TaskStats & { tasks: any[] }>('/api/tasks'),
+        apiClient.get<CVSummary>('/api/cv/status'),
+      ])
+
+      if (appsRes.status === 'fulfilled') setKanban(appsRes.value.data)
+      if (tasksRes.status === 'fulfilled') {
+        const d = tasksRes.value.data
+        setTaskStats({ total: d.total, pending: d.pending, completed: d.completed })
+      }
+      if (cvRes.status === 'fulfilled') setCv(cvRes.value.data)
+    } catch (err) {
+      // Leave state empty on error
+    } finally {
+      setStatsLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchStats()
+  }, [fetchStats])
+
+  const totalApps = kanban
+    ? kanban.applied.length + kanban.interviewing.length + kanban.offer.length + kanban.rejected.length
+    : 0
+  const interviewCount = kanban ? kanban.interviewing.length : 0
+  const offerCount = kanban ? kanban.offer.length : 0
+  const completedTasks = taskStats?.completed ?? 0
+  const pendingTasks = taskStats?.pending ?? 0
+  const skillCount = cv?.skills?.length ?? 0
+  const profileComplete = skillCount > 0 ? Math.min(100, Math.round((skillCount / 15) * 100)) : 0
+  const experienceYears = cv?.experience_years ?? 0
+
+  // Build recent activity from real data
+  const recentApps = kanban
+    ? [...kanban.applied, ...kanban.interviewing, ...kanban.offer]
+        .slice(-3)
+        .reverse()
+        .map((a) => ({
+          title: `${a.role || a.title || 'Application'} at ${a.company || 'Company'}`,
+          time: a.applied_date ? new Date(a.applied_date).toLocaleDateString() : 'Recent',
+          type: 'application' as const,
+        }))
+    : []
 
   return (
     <div className="flex h-screen bg-slate-50">
@@ -118,8 +193,8 @@ export default function DashboardClient() {
               <p className="text-slate-500">Here's what's happening with your career today.</p>
             </div>
             <div className="flex items-center gap-3">
-              <Link 
-                href="/dashboard/cv"
+              <Link
+                href="/cv"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 <Upload className="w-4 h-4" />
@@ -135,24 +210,24 @@ export default function DashboardClient() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <StatCard 
               label="Applications" 
-              value="12" 
+              value={statsLoading ? '—' : totalApps}
               icon={Briefcase}
-              trend="+3 this week"
+              trend={offerCount > 0 ? `${offerCount} offer${offerCount === 1 ? '' : 's'}` : undefined}
             />
-            <StatCard 
-              label="Tasks Complete" 
-              value="8" 
+            <StatCard
+              label="Tasks Complete"
+              value={statsLoading ? '—' : completedTasks}
               icon={CheckSquare}
-              trend="Today"
+              trend={pendingTasks > 0 ? `${pendingTasks} pending` : 'All done'}
             />
-            <StatCard 
-              label="Interviews" 
-              value="2" 
+            <StatCard
+              label="Interviews"
+              value={statsLoading ? '—' : interviewCount}
               icon={Calendar}
             />
-            <StatCard 
-              label="Fit Score" 
-              value="87%" 
+            <StatCard
+              label="Profile"
+              value={statsLoading ? '—' : `${profileComplete}%`}
               icon={TrendingUp}
             />
           </div>
@@ -199,24 +274,26 @@ export default function DashboardClient() {
             {/* Recent Activity */}
             <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-6">
               <h2 className="text-lg font-semibold text-slate-900 mb-4">Recent Activity</h2>
-              <div className="space-y-4">
-                {[
-                  { title: 'Applied to Senior Developer at TechCorp', time: '2 hours ago', type: 'application' },
-                  { title: 'Completed: Update LinkedIn profile', time: 'Yesterday', type: 'task' },
-                  { title: 'Interview scheduled with DataFlow Inc', time: '2 days ago', type: 'interview' },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-start gap-4 pb-4 border-b border-slate-100 last:border-0 last:pb-0">
-                    <div className={`w-2 h-2 rounded-full mt-2 ${
-                      item.type === 'application' ? 'bg-blue-500' :
-                      item.type === 'task' ? 'bg-emerald-500' : 'bg-purple-500'
-                    }`} />
-                    <div className="flex-1">
-                      <p className="font-medium text-slate-900">{item.title}</p>
-                      <p className="text-sm text-slate-500">{item.time}</p>
+              {recentApps.length === 0 ? (
+                <div className="text-center py-8 text-slate-500 text-sm">
+                  {statsLoading ? 'Loading...' : 'No applications yet. Start by searching for jobs.'}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {recentApps.map((item, i) => (
+                    <div key={i} className="flex items-start gap-4 pb-4 border-b border-slate-100 last:border-0 last:pb-0">
+                      <div className={`w-2 h-2 rounded-full mt-2 ${
+                        item.type === 'application' ? 'bg-blue-500' :
+                        item.type === 'task' ? 'bg-emerald-500' : 'bg-purple-500'
+                      }`} />
+                      <div className="flex-1">
+                        <p className="font-medium text-slate-900">{item.title}</p>
+                        <p className="text-sm text-slate-500">{item.time}</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
@@ -228,19 +305,29 @@ export default function DashboardClient() {
                   <FileText className="w-5 h-5" />
                   <span className="font-semibold">Your CV Status</span>
                 </div>
-                <p className="text-blue-100 mb-4">
-                  Your CV is analyzed and ready. 15 skills detected, 3 years of experience.
-                </p>
+                {cv ? (
+                  <p className="text-blue-100 mb-4">
+                    {cv.status === 'completed'
+                      ? `Your CV is analyzed. ${skillCount} skills detected${experienceYears ? `, ${experienceYears} years of experience` : ''}.`
+                      : cv.status === 'processing' || cv.status === 'pending'
+                      ? 'Your CV is being processed...'
+                      : 'Your CV needs to be re-uploaded.'}
+                  </p>
+                ) : (
+                  <p className="text-blue-100 mb-4">
+                    Upload your CV to unlock AI-powered job matching and insights.
+                  </p>
+                )}
                 <Link
-                  href="/dashboard/cv"
+                  href="/cv"
                   className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors"
                 >
-                  View Details
+                  {cv ? 'View Details' : 'Upload CV'}
                   <ChevronRight className="w-4 h-4" />
                 </Link>
               </div>
               <div className="text-right">
-                <div className="text-4xl font-bold">87%</div>
+                <div className="text-4xl font-bold">{profileComplete}%</div>
                 <p className="text-blue-100 text-sm">Profile Completeness</p>
               </div>
             </div>

@@ -34,7 +34,7 @@ async def get_tasks(
     completed: Optional[bool] = None,
     priority: Optional[str] = None,
     limit: int = Query(default=50, ge=1, le=100),
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Get all tasks for the current user."""
@@ -71,7 +71,7 @@ async def get_tasks(
 @router.post("", response_model=TaskResponse)
 async def create_task(
     task_data: TaskCreate,
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Create a new task."""
@@ -97,7 +97,7 @@ async def create_task(
 @router.get("/{task_id}", response_model=TaskResponse)
 async def get_task(
     task_id: int,
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Get a specific task."""
@@ -118,7 +118,7 @@ async def get_task(
 async def update_task(
     task_id: int,
     task_data: TaskUpdate,
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Update an existing task."""
@@ -157,7 +157,7 @@ async def update_task(
 @router.delete("/{task_id}")
 async def delete_task(
     task_id: int,
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Delete a task."""
@@ -180,7 +180,7 @@ async def delete_task(
 @router.post("/{task_id}/toggle")
 async def toggle_task_completion(
     task_id: int,
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Toggle task completion status."""
@@ -209,7 +209,7 @@ async def toggle_task_completion(
 
 @router.get("/stats/summary")
 async def get_task_stats(
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Get task statistics for dashboard."""
@@ -255,7 +255,7 @@ async def get_task_stats(
 @router.post("/bulk")
 async def create_bulk_tasks(
     tasks_data: List[TaskCreate],
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Create multiple tasks at once."""

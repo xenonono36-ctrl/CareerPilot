@@ -35,7 +35,7 @@ async def get_or_create_user(db: AsyncSession, clerk_id: str) -> User:
 
 @router.get("", response_model=ApplicationKanbanResponse)
 async def get_applications(
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Get all applications organized by kanban status."""
@@ -68,7 +68,7 @@ async def get_applications(
 @router.post("", response_model=ApplicationResponse)
 async def create_application(
     app_data: ApplicationCreate,
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Add a new job application to tracker."""
@@ -106,7 +106,7 @@ async def create_application(
 @router.get("/{application_id}", response_model=ApplicationResponse)
 async def get_application(
     application_id: int,
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Get a specific application."""
@@ -130,7 +130,7 @@ async def get_application(
 async def update_application(
     application_id: int,
     app_data: ApplicationUpdate,
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Update application status or details."""
@@ -165,7 +165,7 @@ async def update_application(
 @router.delete("/{application_id}")
 async def delete_application(
     application_id: int,
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Delete an application."""
@@ -190,7 +190,7 @@ async def delete_application(
 
 @router.get("/stats/summary")
 async def get_application_stats(
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Get application statistics."""
@@ -228,7 +228,7 @@ async def get_calendar_events(
     start_date: Optional[datetime] = None,
     end_date: Optional[datetime] = None,
     event_type: Optional[str] = None,
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Get calendar events within date range."""
@@ -254,7 +254,7 @@ async def get_calendar_events(
 @router.post("/calendar/events", response_model=CalendarEventSchema)
 async def create_calendar_event(
     event_data: CalendarEventCreate,
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Create a new calendar event."""
@@ -279,7 +279,7 @@ async def create_calendar_event(
 @router.delete("/calendar/events/{event_id}")
 async def delete_calendar_event(
     event_id: int,
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Delete a calendar event."""
@@ -306,7 +306,7 @@ async def delete_calendar_event(
 
 @router.get("/dashboard/stats", response_model=DashboardStats)
 async def get_dashboard_stats(
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Get dashboard statistics combining all data."""
@@ -368,7 +368,7 @@ async def get_dashboard_stats(
 
 @router.get("/nudges")
 async def get_ai_nudges(
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Generate AI-powered nudges based on user activity."""

@@ -35,7 +35,7 @@ async def get_user_cv(db: AsyncSession, clerk_id: str) -> Optional[CV]:
 @router.post("/search", response_model=JobSearchResponse)
 async def search_jobs(
     request: JobSearchRequest,
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -88,7 +88,7 @@ async def get_job_fit_score(
     job_company: str = Query(...),
     job_description: str = Query(...),
     job_requirements: str = Query(""),  # Comma-separated
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Calculate detailed fit score for a specific job."""
@@ -125,7 +125,7 @@ async def get_job_fit_score(
 @router.post("/match")
 async def find_matching_jobs(
     limit: int = Query(default=10, ge=1, le=50),
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -196,7 +196,7 @@ async def save_job_for_later(
     job_company: str,
     job_description: str = "",
     job_url: str = "",
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Save a job to user's saved jobs list."""

@@ -83,7 +83,7 @@ async def get_user_cv_data(db: AsyncSession, clerk_id: str) -> Optional[Dict]:
 @router.post("", response_model=ChatResponse)
 async def send_message(
     request: ChatRequest,
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -160,7 +160,7 @@ async def generate_cover_letter(
     job_description: str,
     job_requirements: List[str],
     tone: str = "professional",
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Generate a personalized cover letter for a job."""
@@ -196,7 +196,7 @@ async def generate_cover_letter(
 async def analyze_skill_gap(
     target_role: str,
     job_requirements: List[str],
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Analyze skill gap for a target role."""
@@ -221,7 +221,7 @@ async def analyze_skill_gap(
 async def create_learning_roadmap(
     target_skills: List[str],
     timeline_months: int = 3,
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Create a personalized learning roadmap."""
@@ -242,7 +242,7 @@ async def create_learning_roadmap(
 
 @router.get("/sessions")
 async def get_chat_sessions(
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Get all chat sessions for the user."""
@@ -278,7 +278,7 @@ async def get_chat_sessions(
 @router.get("/sessions/{session_id}")
 async def get_session_history(
     session_id: str,
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Get message history for a specific session."""
@@ -306,7 +306,7 @@ async def get_session_history(
 @router.delete("/sessions/{session_id}")
 async def delete_session(
     session_id: str,
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Delete a chat session."""

@@ -44,7 +44,7 @@ async def get_or_create_user(db: AsyncSession, clerk_id: str) -> User:
 @router.post("/upload", response_model=CVUploadResponse)
 async def upload_cv(
     file: UploadFile = File(...),
-    clerk_id: str = Depends(get_current_clerk_id),  # In production, get from auth header
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """
@@ -153,7 +153,7 @@ async def upload_cv(
 
 @router.get("/status", response_model=CVStatusResponse)
 async def get_cv_status(
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Get the processing status and parsed content of user's CV."""
@@ -184,7 +184,7 @@ async def get_cv_status(
 
 @router.delete("/")
 async def delete_cv(
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """Delete user's CV and associated vector data."""
@@ -215,7 +215,7 @@ async def delete_cv(
 @router.get("/search")
 async def search_cv_content(
     query: str,
-    clerk_id: str = "demo_user",
+    clerk_id: str = Depends(get_current_clerk_id),
     db: AsyncSession = Depends(get_db),
 ):
     """

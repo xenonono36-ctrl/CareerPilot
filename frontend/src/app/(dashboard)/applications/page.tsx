@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { 
   Plus,
@@ -18,44 +18,53 @@ import {
   XCircle,
   AlertCircle,
   Briefcase,
-  GripVertical
+  Loader2
 } from 'lucide-react'
+import apiClient from '@/lib/api'
 
-type ApplicationStatus = 'applied' | 'interview' | 'offer' | 'rejected'
+type ApplicationStatus = 'applied' | 'interviewing' | 'offer' | 'rejected'
 
 interface Application {
-  id: string
+  id: number
+  job_id: string
   position: string
   company: string
-  location: string
+  location?: string
   salary?: string
-  appliedDate: string
+  applied_date?: string
   status: ApplicationStatus
   notes?: string
-  url?: string
+  link?: string
+  interview_date?: string
+  offer_details?: string
+  created_at: string
+  updated_at: string
 }
 
-const mockApplications: Application[] = [
-  { id: '1', position: 'Senior React Developer', company: 'TechCorp BD', location: 'Dhaka', salary: '$2500/mo', appliedDate: '2024-01-15', status: 'applied' },
-  { id: '2', position: 'Full Stack Engineer', company: 'StartupXYZ', location: 'Remote', appliedDate: '2024-01-14', status: 'interview', notes: 'Technical round on Friday' },
-  { id: '3', position: 'ML Engineer', company: 'AI Solutions', location: 'Chittagong', salary: '$3000/mo', appliedDate: '2024-01-10', status: 'applied' },
-  { id: '4', position: 'DevOps Engineer', company: 'CloudTech', location: 'Remote', appliedDate: '2024-01-08', status: 'offer', salary: '$2800/mo', notes: 'Pending response' },
-  { id: '5', position: 'Junior Backend Dev', company: 'WebAgency', location: 'Dhaka', appliedDate: '2024-01-05', status: 'rejected', notes: 'Not enough experience' },
-]
+interface KanbanData {
+  applied: Application[]
+  interviewing: Application[]
+  offer: Application[]
+  rejected: Application[]
+}
 
 const statusConfig = {
   applied: { label: 'Applied', color: 'bg-blue-50 border-blue-200', textColor: 'text-blue-700', icon: Clock },
-  interview: { label: 'Interview', color: 'bg-amber-50 border-amber-200', textColor: 'text-amber-700', icon: AlertCircle },
+  interviewing: { label: 'Interview', color: 'bg-amber-50 border-amber-200', textColor: 'text-amber-700', icon: AlertCircle },
   offer: { label: 'Offer', color: 'bg-emerald-50 border-emerald-200', textColor: 'text-emerald-700', icon: CheckCircle },
   rejected: { label: 'Rejected', color: 'bg-red-50 border-red-200', textColor: 'text-red-700', icon: XCircle }
 }
 
-const ApplicationCard = ({ app }: { app: Application }) => {
+const ApplicationCard = ({ app, onStatusChange, onDelete }: { 
+  app: Application
+  onStatusChange: (id: number, status: ApplicationStatus) => void
+  onDelete: (id: number) => void
+}) => {
   const [showMenu, setShowMenu] = useState(false)
   const config = statusConfig[app.status]
 
   return (
-    <div className="group bg-white rounded-xl border border-slate-200 p-4 hover:border-blue-200 hover:shadow-md transition-all">
+    <div className="group bg-white rounded-xl border border-slate-200 p-4 hover:border-blue-200 hover:shadow-md transition-all relative">
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
           <h4 className="font-semibold text-slate-900">{app.position}</h4>
@@ -72,18 +81,14 @@ const ApplicationCard = ({ app }: { app: Application }) => {
         </button>
       </div>
 
-      <div className="flex items-center gap-2 text-xs text-slate-500 mb-3">
-        <span className="flex items-center gap-1">
-          <MapPin className="w-3 h-3" />
-          {app.location}
-        </span>
-        {app.salary && (
+      {app.salary && (
+        <div className="flex items-center gap-2 text-xs text-slate-500 mb-3">
           <span className="flex items-center gap-1">
             <DollarSign className="w-3 h-3" />
             {app.salary}
           </span>
-        )}
-      </div>
+        </div>
+      )}
 
       {app.notes && (
         <p className="text-xs text-slate-500 bg-slate-50 rounded-lg p-2 mb-3">
@@ -93,11 +98,11 @@ const ApplicationCard = ({ app }: { app: Application }) => {
 
       <div className="flex items-center justify-between">
         <span className="text-xs text-slate-400">
-          Applied {app.appliedDate}
+          Applied {app.applied_date ? new Date(app.applied_date).toLocaleDateString() : '—'}
         </span>
-        {app.url && (
+        {app.link && (
           <a 
-            href={app.url}
+            href={app.link}
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-600 hover:text-blue-700"
@@ -108,11 +113,24 @@ const ApplicationCard = ({ app }: { app: Application }) => {
       </div>
 
       {showMenu && (
-        <div className="absolute right-4 mt-2 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-10">
-          <button className="w-full px-4 py-2 text-left text-sm hover:bg-slate-50 flex items-center gap-2">
-            <Edit3 className="w-4 h-4" /> Edit
-          </button>
-          <button className="w-full px-4 py-2 text-left text-sm hover:bg-slate-50 flex items-center gap-2 text-red-600">
+        <div className="absolute right-4 top-12 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-10 min-w-[160px]">
+          {(Object.keys(statusConfig) as ApplicationStatus[])
+            .filter(s => s !== app.status)
+            .map(status => (
+              <button
+                key={status}
+                onClick={() => { onStatusChange(app.id, status); setShowMenu(false) }}
+                className="w-full px-4 py-2 text-left text-sm hover:bg-slate-50 flex items-center gap-2"
+              >
+                Move to {statusConfig[status].label}
+              </button>
+            ))
+          }
+          <hr className="my-1" />
+          <button 
+            onClick={() => { onDelete(app.id); setShowMenu(false) }}
+            className="w-full px-4 py-2 text-left text-sm hover:bg-slate-50 flex items-center gap-2 text-red-600"
+          >
             <Trash2 className="w-4 h-4" /> Delete
           </button>
         </div>
@@ -123,10 +141,14 @@ const ApplicationCard = ({ app }: { app: Application }) => {
 
 const KanbanColumn = ({ 
   status, 
-  applications 
+  applications,
+  onStatusChange,
+  onDelete
 }: { 
   status: ApplicationStatus
   applications: Application[]
+  onStatusChange: (id: number, status: ApplicationStatus) => void
+  onDelete: (id: number) => void
 }) => {
   const config = statusConfig[status]
   const Icon = config.icon
@@ -143,7 +165,12 @@ const KanbanColumn = ({
       
       <div className="space-y-3 relative">
         {applications.map((app) => (
-          <ApplicationCard key={app.id} app={app} />
+          <ApplicationCard 
+            key={app.id} 
+            app={app} 
+            onStatusChange={onStatusChange}
+            onDelete={onDelete}
+          />
         ))}
         {applications.length === 0 && (
           <div className="text-center py-8 text-slate-400">
@@ -156,16 +183,76 @@ const KanbanColumn = ({
 }
 
 export default function ApplicationsPage() {
+  const [kanban, setKanban] = useState<KanbanData>({ applied: [], interviewing: [], offer: [], rejected: [] })
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [showAddForm, setShowAddForm] = useState(false)
+  const [saving, setSaving] = useState(false)
   const [newApp, setNewApp] = useState({
     position: '',
     company: '',
     location: '',
     salary: '',
-    url: ''
+    link: ''
   })
 
-  const applications = mockApplications
+  const allApplications = Object.values(kanban).flat()
+
+  const fetchApplications = useCallback(async () => {
+    try {
+      setLoading(true)
+      const res = await apiClient.get('/api/applications')
+      setKanban(res.data)
+      setError(null)
+    } catch (err: any) {
+      setError(err.message || 'Failed to load applications')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => { fetchApplications() }, [fetchApplications])
+
+  const handleAdd = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newApp.position.trim() || !newApp.company.trim()) return
+    try {
+      setSaving(true)
+      await apiClient.post('/api/applications', {
+        job_id: `manual_${Date.now()}`,
+        position: newApp.position,
+        company: newApp.company,
+        salary: newApp.salary || undefined,
+        link: newApp.link || undefined,
+        status: 'applied',
+      })
+      setShowAddForm(false)
+      setNewApp({ position: '', company: '', location: '', salary: '', link: '' })
+      await fetchApplications()
+    } catch (err: any) {
+      setError(err.message || 'Failed to add application')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleStatusChange = async (id: number, status: ApplicationStatus) => {
+    try {
+      await apiClient.patch(`/api/applications/${id}`, { status })
+      await fetchApplications()
+    } catch (err: any) {
+      setError(err.message || 'Failed to update status')
+    }
+  }
+
+  const handleDelete = async (id: number) => {
+    try {
+      await apiClient.delete(`/api/applications/${id}`)
+      await fetchApplications()
+    } catch (err: any) {
+      setError(err.message || 'Failed to delete')
+    }
+  }
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -180,7 +267,7 @@ export default function ApplicationsPage() {
           </div>
           <div className="flex items-center gap-4">
             <Link 
-              href="/dashboard"
+              href="/"
               className="text-sm font-medium text-slate-600 hover:text-slate-900"
             >
               Dashboard
@@ -196,32 +283,48 @@ export default function ApplicationsPage() {
         </div>
       </header>
 
-      {/* Stats Bar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="grid grid-cols-4 gap-4 mb-8">
-          {[
-            { label: 'Total Applied', value: applications.length, color: 'text-blue-600' },
-            { label: 'Interviews', value: applications.filter(a => a.status === 'interview').length, color: 'text-amber-600' },
-            { label: 'Offers', value: applications.filter(a => a.status === 'offer').length, color: 'text-emerald-600' },
-            { label: 'Rejected', value: applications.filter(a => a.status === 'rejected').length, color: 'text-red-600' }
-          ].map((stat, i) => (
-            <div key={i} className="bg-white rounded-xl border border-slate-200 p-4">
-              <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
-              <p className="text-sm text-slate-500">{stat.label}</p>
-            </div>
-          ))}
+      {error && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded-lg text-sm">{error}</div>
         </div>
+      )}
 
-        {/* Kanban Board */}
-        <div className="grid grid-cols-4 gap-4">
-          {(Object.keys(statusConfig) as ApplicationStatus[]).map((status) => (
-            <KanbanColumn 
-              key={status}
-              status={status}
-              applications={applications.filter(a => a.status === status)}
-            />
-          ))}
-        </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="w-8 h-8 text-emerald-600 animate-spin" />
+          </div>
+        ) : (
+          <>
+            {/* Stats Bar */}
+            <div className="grid grid-cols-4 gap-4 mb-8">
+              {[
+                { label: 'Total Applied', value: allApplications.length, color: 'text-blue-600' },
+                { label: 'Interviews', value: kanban.interviewing.length, color: 'text-amber-600' },
+                { label: 'Offers', value: kanban.offer.length, color: 'text-emerald-600' },
+                { label: 'Rejected', value: kanban.rejected.length, color: 'text-red-600' }
+              ].map((stat, i) => (
+                <div key={i} className="bg-white rounded-xl border border-slate-200 p-4">
+                  <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
+                  <p className="text-sm text-slate-500">{stat.label}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Kanban Board */}
+            <div className="grid grid-cols-4 gap-4">
+              {(Object.keys(statusConfig) as ApplicationStatus[]).map((status) => (
+                <KanbanColumn 
+                  key={status}
+                  status={status}
+                  applications={kanban[status]}
+                  onStatusChange={handleStatusChange}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Add Application Modal */}
@@ -230,7 +333,7 @@ export default function ApplicationsPage() {
           <div className="bg-white rounded-2xl w-full max-w-md p-6">
             <h2 className="text-xl font-bold text-slate-900 mb-6">Add New Application</h2>
             
-            <form onSubmit={(e) => { e.preventDefault(); setShowAddForm(false) }} className="space-y-4">
+            <form onSubmit={handleAdd} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Position</label>
                 <input
@@ -263,7 +366,7 @@ export default function ApplicationsPage() {
                     value={newApp.location}
                     onChange={(e) => setNewApp({ ...newApp, location: e.target.value })}
                     className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    placeholder="Dhaka"
+                    placeholder="Remote"
                   />
                 </div>
                 <div>
@@ -282,8 +385,8 @@ export default function ApplicationsPage() {
                 <label className="block text-sm font-medium text-slate-700 mb-1">Job URL</label>
                 <input
                   type="url"
-                  value={newApp.url}
-                  onChange={(e) => setNewApp({ ...newApp, url: e.target.value })}
+                  value={newApp.link}
+                  onChange={(e) => setNewApp({ ...newApp, link: e.target.value })}
                   className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   placeholder="https://..."
                 />
@@ -292,9 +395,10 @@ export default function ApplicationsPage() {
               <div className="flex gap-3 pt-4">
                 <button
                   type="submit"
-                  className="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium"
+                  disabled={saving}
+                  className="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium disabled:opacity-50"
                 >
-                  Add Application
+                  {saving ? 'Saving…' : 'Add Application'}
                 </button>
                 <button
                   type="button"

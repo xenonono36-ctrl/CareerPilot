@@ -3,20 +3,20 @@
 import { useState } from 'react'
 import { useUser } from '@clerk/nextjs'
 import Link from 'next/link'
-import { 
-  Search, 
-  MapPin, 
-  Briefcase, 
-  Filter, 
-  ChevronDown,
+import {
+  Search,
+  MapPin,
+  Briefcase,
   Building2,
   Clock,
   DollarSign,
   ExternalLink,
   Bookmark,
-  Star
+  Star,
+  Loader2,
 } from 'lucide-react'
 import { useJobSearchStore, type Job } from '@/store/jobStore'
+import apiClient from '@/lib/api'
 
 const JobCard = ({ job }: { job: Job }) => (
   <div className="bg-white rounded-xl border border-slate-200 p-6 hover:border-blue-200 hover:shadow-lg transition-all duration-200">
@@ -35,7 +35,7 @@ const JobCard = ({ job }: { job: Job }) => (
         </div>
       )}
     </div>
-    
+
     <div className="flex flex-wrap gap-3 text-sm text-slate-500 mb-4">
       <span className="flex items-center gap-1">
         <MapPin className="w-4 h-4" />
@@ -56,9 +56,9 @@ const JobCard = ({ job }: { job: Job }) => (
         {job.postedDate}
       </span>
     </div>
-    
+
     <p className="text-slate-600 text-sm mb-4 line-clamp-2">{job.description}</p>
-    
+
     {job.requirements.length > 0 && (
       <div className="flex flex-wrap gap-2 mb-4">
         {job.requirements.slice(0, 4).map((req, i) => (
@@ -73,9 +73,9 @@ const JobCard = ({ job }: { job: Job }) => (
         )}
       </div>
     )}
-    
+
     <div className="flex gap-2">
-      <a 
+      <a
         href={job.url}
         target="_blank"
         rel="noopener noreferrer"
@@ -93,60 +93,42 @@ const JobCard = ({ job }: { job: Job }) => (
 
 export default function JobsSearchPage() {
   const { user } = useUser()
-  const { searchQuery, setSearchQuery, results, setResults, loading, setLoading } = useJobSearchStore()
+  const { searchQuery, setSearchQuery, results, setResults, loading, setLoading, error, setError } = useJobSearchStore()
   const [location, setLocation] = useState('')
   const [jobType, setJobType] = useState('')
-  const [showFilters, setShowFilters] = useState(false)
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    
-    // Mock search for demo
-    setTimeout(() => {
-      const mockJobs: Job[] = [
+    setError(null)
+    try {
+      const res = await apiClient.post<{ jobs: any[]; total: number; query: string }>(
+        '/api/jobs/search',
         {
-          id: '1',
-          title: 'Senior Full Stack Developer',
-          company: 'TechCorp Bangladesh',
-          location: 'Dhaka, Bangladesh',
-          type: 'Full-time',
-          description: 'Join our engineering team to build scalable web applications serving millions of users worldwide.',
-          requirements: ['React', 'Node.js', 'TypeScript', 'PostgreSQL', 'AWS'],
-          salary: '$2,000 - $3,000',
-          postedDate: '2 days ago',
-          url: 'https://example.com/job/1',
-          fitScore: 87
-        },
-        {
-          id: '2',
-          title: 'Machine Learning Engineer',
-          company: 'DataFlow Inc',
-          location: 'Remote',
-          type: 'Full-time',
-          description: 'Build and deploy ML models for our recommendation systems and data analytics platform.',
-          requirements: ['Python', 'TensorFlow', 'PyTorch', 'SQL', 'Docker'],
-          salary: '$3,000 - $5,000',
-          postedDate: '1 week ago',
-          url: 'https://example.com/job/2',
-          fitScore: 72
-        },
-        {
-          id: '3',
-          title: 'Junior Web Developer',
-          company: 'StartupXYZ',
-          location: 'Chittagong, Bangladesh',
-          type: 'Contract',
-          description: 'Help build our MVP and grow with our startup. Great opportunity for fresh graduates.',
-          requirements: ['HTML', 'CSS', 'JavaScript', 'React Basics'],
-          salary: '$800 - $1,200',
-          postedDate: '3 days ago',
-          url: 'https://example.com/job/3',
-          fitScore: 65
+          query: searchQuery,
+          location: location || undefined,
+          job_type: jobType || undefined,
+          limit: 20,
         }
-      ]
-      setResults(mockJobs)
-    }, 1000)
+      )
+      const mapped: Job[] = res.data.jobs.map((j) => ({
+        id: j.job_id,
+        title: j.title,
+        company: j.company,
+        location: j.location,
+        type: jobType || 'Full-time',
+        description: j.description,
+        requirements: j.requirements || [],
+        salary: j.salary,
+        postedDate: j.posted_date || 'Recently',
+        url: j.url || '#',
+        fitScore: j.fit_score,
+      }))
+      setResults(mapped)
+    } catch (err: any) {
+      setError(err.response?.data?.detail || err.message || 'Search failed')
+      setResults([])
+    }
   }
 
   return (
@@ -163,7 +145,7 @@ export default function JobsSearchPage() {
                 CareerPilot
               </span>
             </Link>
-            <Link 
+            <Link
               href="/dashboard"
               className="text-sm font-medium text-slate-600 hover:text-slate-900"
             >
@@ -177,7 +159,7 @@ export default function JobsSearchPage() {
         {/* Search Section */}
         <div className="bg-white rounded-2xl border border-slate-200 p-8 mb-8">
           <h1 className="text-2xl font-bold text-slate-900 mb-6">Find Your Dream Job</h1>
-          
+
           <form onSubmit={handleSearch} className="space-y-4">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1 relative">
@@ -212,9 +194,10 @@ export default function JobsSearchPage() {
               </select>
               <button
                 type="submit"
-                disabled={loading}
-                className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50"
+                disabled={loading || !searchQuery.trim()}
+                className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
               >
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
                 {loading ? 'Searching...' : 'Search Jobs'}
               </button>
             </div>
@@ -236,8 +219,12 @@ export default function JobsSearchPage() {
         {results.length === 0 && !loading && (
           <div className="text-center py-16 bg-white rounded-2xl border border-slate-200">
             <Briefcase className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-slate-900 mb-2">No jobs found</h3>
-            <p className="text-slate-500">Try adjusting your search terms or filters</p>
+            <h3 className="text-lg font-semibold text-slate-900 mb-2">
+              {error ? 'Search failed' : 'No jobs found'}
+            </h3>
+            <p className="text-slate-500">
+              {error || 'Try adjusting your search terms or filters'}
+            </p>
           </div>
         )}
       </div>

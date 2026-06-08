@@ -1,47 +1,91 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useUser } from '@clerk/nextjs'
 import Link from 'next/link'
 import { 
   Upload, 
-  FileText, 
-  Star,
+  FileText,
   CheckCircle,
   Loader2,
   AlertCircle,
-  X,
   Download,
   Trash2,
-  Eye
+  Eye,
+  Briefcase,
+  GraduationCap,
+  FolderKanban
 } from 'lucide-react'
+import apiClient from '@/lib/api'
 
-const mockCV = {
-  name: 'Resume_Ahmed_Khan.pdf',
-  uploadDate: '2024-01-15',
-  status: 'processed',
-  skills: ['React', 'TypeScript', 'Node.js', 'Python', 'PostgreSQL', 'Docker'],
-  summary: 'Full-stack developer with 3 years of experience building web applications...'
+interface CVStatus {
+  cv_id: string
+  filename: string
+  status: 'pending' | 'processing' | 'completed' | 'failed'
+  skills: string[]
+  experience_years: number | null
+  education: string[]
+  sections: {
+    skills: string[]
+    education: any[]
+    experience: any[]
+    projects: any[]
+  }
+  processed_at: string | null
 }
 
 export default function CVPage() {
   const { user } = useUser()
   const [dragActive, setDragActive] = useState(false)
   const [uploading, setUploading] = useState(false)
-  const [uploadSuccess, setUploadSuccess] = useState(false)
-  const [cvData, setCvData] = useState(mockCV)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  const [cvData, setCvData] = useState<CVStatus | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [actionLoading, setActionLoading] = useState(false)
+
+  const fetchStatus = useCallback(async () => {
+    try {
+      setLoading(true)
+      const res = await apiClient.get<CVStatus>('/api/cv/status')
+      setCvData(res.data)
+      setUploadError(null)
+    } catch (err: any) {
+      if (err.response?.status !== 404) {
+        setUploadError(err.response?.data?.detail || err.message || 'Failed to load CV')
+      }
+      setCvData(null)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchStatus()
+  }, [fetchStatus])
+
+  // Poll for processing status when CV is in-flight
+  useEffect(() => {
+    if (!cvData || cvData.status !== 'processing') return
+    const interval = setInterval(() => {
+      fetchStatus().catch(() => {})
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [cvData?.status, fetchStatus])
 
   const handleDrag = (e: React.FormEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    if (dragActive) setDragActive(false)
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true)
+    } else if (e.type === 'dragleave') {
+      setDragActive(false)
+    }
   }
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
     setDragActive(false)
-    // Handle file drop
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       handleFileUpload(e.dataTransfer.files[0])
     }
@@ -49,22 +93,48 @@ export default function CVPage() {
 
   const handleFileUpload = async (file: File) => {
     setUploading(true)
-    // Simulate upload
-    setTimeout(() => {
-      setUploading(false)
-      setUploadSuccess(true)
-      setCvData({
-        ...cvData,
-        name: file.name,
-        uploadDate: new Date().toISOString().split('T')[0],
-        status: 'processing'
+    setUploadError(null)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const res = await apiClient.post('/api/cv/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       })
-      
-      setTimeout(() => {
-        setCvData(prev => ({ ...prev, status: 'processed' }))
-      }, 2000)
-    }, 2000)
+      // Optimistic placeholder; status poll will fill in real data
+      setCvData({
+        cv_id: res.data.cv_id,
+        filename: file.name,
+        status: 'processing',
+        skills: [],
+        experience_years: null,
+        education: [],
+        sections: { skills: [], education: [], experience: [], projects: [] },
+        processed_at: null,
+      })
+    } catch (err: any) {
+      setUploadError(err.response?.data?.detail || err.message || 'Upload failed')
+    } finally {
+      setUploading(false)
+    }
   }
+
+  const handleDelete = async () => {
+    if (!confirm('Delete your CV? This cannot be undone.')) return
+    setActionLoading(true)
+    try {
+      await apiClient.delete('/api/cv/')
+      setCvData(null)
+    } catch (err: any) {
+      setUploadError(err.response?.data?.detail || err.message || 'Delete failed')
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
+  const isProcessing = uploading || cvData?.status === 'processing' || cvData?.status === 'pending'
+  const uploadDate = cvData?.processed_at
+    ? new Date(cvData.processed_at).toISOString().split('T')[0]
+    : null
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -77,7 +147,7 @@ export default function CVPage() {
             </div>
             <span className="text-xl font-bold text-slate-900">My CV</span>
           </div>
-          <Link 
+          <Link
             href="/dashboard"
             className="text-sm font-medium text-slate-600 hover:text-slate-900"
           >
@@ -87,11 +157,18 @@ export default function CVPage() {
       </header>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {uploadError && (
+          <div className="mb-6 flex items-start gap-2 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+            <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+            <span>{uploadError}</span>
+          </div>
+        )}
+
         {/* Upload Section */}
-        <div 
+        <div
           className={`relative border-2 border-dashed rounded-2xl p-12 text-center transition-all ${
-            dragActive 
-              ? 'border-blue-500 bg-blue-50' 
+            dragActive
+              ? 'border-blue-500 bg-blue-50'
               : 'border-slate-300 hover:border-blue-400'
           }`}
           onDragEnter={handleDrag}
@@ -99,17 +176,15 @@ export default function CVPage() {
           onDragOver={handleDrag}
           onDrop={handleDrop}
         >
-          {uploading ? (
+          {isProcessing ? (
             <div className="space-y-4">
               <Loader2 className="w-16 h-16 text-blue-600 mx-auto animate-spin" />
-              <p className="text-lg font-medium text-slate-900">Uploading your CV...</p>
-              <p className="text-sm text-slate-500">Processing with AI...</p>
-            </div>
-          ) : uploadSuccess ? (
-            <div className="space-y-4">
-              <CheckCircle className="w-16 h-16 text-emerald-500 mx-auto" />
-              <p className="text-lg font-medium text-emerald-700">CV uploaded successfully!</p>
-              <p className="text-sm text-slate-500">AI is analyzing your skills...</p>
+              <p className="text-lg font-medium text-slate-900">
+                {uploading ? 'Uploading your CV...' : 'AI is analyzing your CV...'}
+              </p>
+              <p className="text-sm text-slate-500">
+                {uploading ? 'Sending to server' : 'Extracting skills, experience, and education'}
+              </p>
             </div>
           ) : (
             <>
@@ -121,9 +196,9 @@ export default function CVPage() {
               <label className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors cursor-pointer">
                 <FileText className="w-5 h-5" />
                 Browse Files
-                <input 
-                  type="file" 
-                  accept=".pdf,.doc,.docx" 
+                <input
+                  type="file"
+                  accept=".pdf,.docx"
                   className="hidden"
                   onChange={(e) => {
                     if (e.target.files?.[0]) {
@@ -132,16 +207,20 @@ export default function CVPage() {
                   }}
                 />
               </label>
-              <p className="text-xs text-slate-400 mt-4">Supports PDF, DOC, DOCX up to 10MB</p>
+              <p className="text-xs text-slate-400 mt-4">Supports PDF, DOCX up to 10MB</p>
             </>
           )}
         </div>
 
         {/* Current CV */}
-        {cvData && (
+        {loading && !cvData ? (
+          <div className="mt-8 flex justify-center">
+            <Loader2 className="w-6 h-6 text-slate-400 animate-spin" />
+          </div>
+        ) : cvData && (
           <div className="mt-8">
             <h2 className="text-lg font-semibold text-slate-900 mb-4">Current CV</h2>
-            
+
             <div className="bg-white rounded-xl border border-slate-200 p-6">
               <div className="flex items-start justify-between mb-6">
                 <div className="flex items-center gap-4">
@@ -149,18 +228,23 @@ export default function CVPage() {
                     <FileText className="w-6 h-6 text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-slate-900">{cvData.name}</h3>
+                    <h3 className="font-semibold text-slate-900">{cvData.filename}</h3>
                     <p className="text-sm text-slate-500">
-                      Uploaded on {cvData.uploadDate}
+                      {uploadDate ? `Processed on ${uploadDate}` : 'Processing...'}
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-2">
-                  {cvData.status === 'processed' ? (
+                  {cvData.status === 'completed' ? (
                     <span className="flex items-center gap-1 px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-sm font-medium">
                       <CheckCircle className="w-4 h-4" />
                       Processed
+                    </span>
+                  ) : cvData.status === 'failed' ? (
+                    <span className="flex items-center gap-1 px-3 py-1 bg-red-50 text-red-700 rounded-full text-sm font-medium">
+                      <AlertCircle className="w-4 h-4" />
+                      Failed
                     </span>
                   ) : (
                     <span className="flex items-center gap-1 px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-sm font-medium">
@@ -172,46 +256,73 @@ export default function CVPage() {
               </div>
 
               {/* Skills */}
-              {cvData.status === 'processed' && (
-                <>
-                  <div className="mb-6">
-                    <h4 className="text-sm font-medium text-slate-700 mb-3">Extracted Skills</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {cvData.skills.map((skill, i) => (
-                        <span 
-                          key={i}
-                          className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-medium"
-                        >
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
+              {cvData.status === 'completed' && cvData.skills.length > 0 && (
+                <div className="mb-6">
+                  <h4 className="text-sm font-medium text-slate-700 mb-3">
+                    Extracted Skills ({cvData.skills.length})
+                    {cvData.experience_years != null && (
+                      <span className="ml-2 text-xs text-slate-500 font-normal">
+                        · {cvData.experience_years} years experience
+                      </span>
+                    )}
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {cvData.skills.map((skill, i) => (
+                      <span
+                        key={i}
+                        className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-medium"
+                      >
+                        {skill}
+                      </span>
+                    ))}
                   </div>
+                </div>
+              )}
 
-                  <div className="mb-6">
-                    <h4 className="text-sm font-medium text-slate-700 mb-2">AI Summary</h4>
-                    <p className="text-sm text-slate-600 bg-slate-50 rounded-lg p-4">
-                      {cvData.summary}
+              {/* Sections summary */}
+              {cvData.status === 'completed' && (
+                <div className="mb-6 grid grid-cols-3 gap-3">
+                  <div className="bg-slate-50 rounded-lg p-3">
+                    <div className="flex items-center gap-2 text-slate-600 mb-1">
+                      <Briefcase className="w-4 h-4" />
+                      <span className="text-xs font-medium">Experience</span>
+                    </div>
+                    <p className="text-lg font-semibold text-slate-900">
+                      {cvData.sections.experience?.length || 0}
                     </p>
                   </div>
-
-                  {/* Actions */}
-                  <div className="flex gap-3">
-                    <button className="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
-                      <Eye className="w-4 h-4" />
-                      View
-                    </button>
-                    <button className="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
-                      <Download className="w-4 h-4" />
-                      Download
-                    </button>
-                    <button className="flex items-center gap-2 px-4 py-2 text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors">
-                      <Trash2 className="w-4 h-4" />
-                      Delete
-                    </button>
+                  <div className="bg-slate-50 rounded-lg p-3">
+                    <div className="flex items-center gap-2 text-slate-600 mb-1">
+                      <GraduationCap className="w-4 h-4" />
+                      <span className="text-xs font-medium">Education</span>
+                    </div>
+                    <p className="text-lg font-semibold text-slate-900">
+                      {cvData.sections.education?.length || 0}
+                    </p>
                   </div>
-                </>
+                  <div className="bg-slate-50 rounded-lg p-3">
+                    <div className="flex items-center gap-2 text-slate-600 mb-1">
+                      <FolderKanban className="w-4 h-4" />
+                      <span className="text-xs font-medium">Projects</span>
+                    </div>
+                    <p className="text-lg font-semibold text-slate-900">
+                      {cvData.sections.projects?.length || 0}
+                    </p>
+                  </div>
+                </div>
               )}
+
+              {/* Actions */}
+              <div className="flex gap-3">
+                <button
+                  onClick={handleDelete}
+                  disabled={actionLoading}
+                  className="flex items-center gap-2 px-4 py-2 text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50"
+                >
+                  {actionLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
         )}

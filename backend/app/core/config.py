@@ -32,8 +32,11 @@ class Settings(BaseSettings):
     # ChromaDB
     chroma_db_path: str = "./chroma_db"
 
-    # CORS
+    # CORS — single URL or comma-separated list, e.g. "https://app.vercel.app,https://staging.vercel.app"
     frontend_url: str = "http://localhost:3000"
+    # Optional: extra regex for custom multi-tenant / non-vercel domains.
+    # Example: r"^https://(staging|app)\.example\.com$"
+    frontend_origin_regex: str = ""
 
     class Config:
         env_file = ".env"

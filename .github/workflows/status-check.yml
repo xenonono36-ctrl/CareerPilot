@@ -1,0 +1,86 @@
+name: CareerPilot status check
+
+# Runs every 6 hours, on every push to master, and on demand.
+# Probes the live backend and the Vercel rewrite path so you catch
+# CORS / DNS / cert / "Network Error" regressions the moment they happen.
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # every 6 hours
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  probe:
+    name: Probe backend & frontend
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    env:
+      # Required secrets (set in repo Settings → Secrets and variables → Actions):
+      #   API_URL          - e.g. https://careerpilot-backend.up.railway.app
+      #   FRONTEND_ORIGIN  - e.g. https://careerpilot.vercel.app
+      # Both must be reachable from GitHub Actions' public egress.
+      API_URL: ${{ secrets.API_URL }}
+      FRONTEND_ORIGIN: ${{ secrets.FRONTEND_ORIGIN }}
+
+    steps:
+      - name: Fail fast if secrets are missing
+        run: |
+          if [ -z "$API_URL" ] || [ -z "$FRONTEND_ORIGIN" ]; then
+            echo "::error::Missing required secrets: API_URL and FRONTEND_ORIGIN"
+            exit 1
+          fi
+          echo "Probing API_URL=$API_URL"
+          echo "Probing FRONTEND_ORIGIN=$FRONTEND_ORIGIN"
+
+      - name: Direct backend health
+        run: |
+          echo "→ GET $API_URL/api/health"
+          curl -sS -o /tmp/health.json -w "HTTP %{http_code} in %{time_total}s\n" \
+            --max-time 15 "$API_URL/api/health"
+          cat /tmp/health.json
+          echo
+
+      - name: Direct backend v1 health alias
+        run: |
+          echo "→ GET $API_URL/api/v1/health"
+          curl -sS -o /tmp/health-v1.json -w "HTTP %{http_code} in %{time_total}s\n" \
+            --max-time 15 "$API_URL/api/v1/health"
+          cat /tmp/health-v1.json
+          echo
+
+      - name: CORS preflight from Vercel origin
+        run: |
+          echo "→ OPTIONS $API_URL/api/cv/status (Origin: $FRONTEND_ORIGIN)"
+          curl -sS -i -X OPTIONS \
+            -H "Origin: $FRONTEND_ORIGIN" \
+            -H "Access-Control-Request-Method: GET" \
+            -H "Access-Control-Request-Headers: authorization,content-type" \
+            --max-time 15 "$API_URL/api/cv/status" \
+            | tee /tmp/preflight.txt \
+            | grep -iE "^(HTTP/|access-control-allow)" || true
+          echo
+          # Hard fail if CORS is missing the allow-origin header
+          if ! grep -iq "^access-control-allow-origin:" /tmp/preflight.txt; then
+            echo "::error::CORS preflight from $FRONTEND_ORIGIN did NOT return Access-Control-Allow-Origin"
+            exit 1
+          fi
+
+      - name: Vercel rewrite path (same-origin)
+        run: |
+          echo "→ GET $FRONTEND_ORIGIN/api/health (should hit Vercel rewrite → backend)"
+          curl -sS -o /tmp/rewrite.json -w "HTTP %{http_code} in %{time_total}s\n" \
+            --max-time 20 "$FRONTEND_ORIGIN/api/health"
+          cat /tmp/rewrite.json
+          echo
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "### CareerPilot status probe" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Backend: $API_URL" >> $GITHUB_STEP_SUMMARY
+          echo "- Frontend: $FRONTEND_ORIGIN" >> $GITHUB_STEP_SUMMARY
+          echo "- Run: ${{ github.run_id }}  Trigger: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY

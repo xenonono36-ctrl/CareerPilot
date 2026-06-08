@@ -1,20 +1,20 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { useUser } from '@clerk/nextjs'
 import Link from 'next/link'
 import { 
   Send, 
-  Sparkles, 
-  Star,
+  Sparkles,
   Briefcase,
   FileText,
   MessageSquare,
   Lightbulb,
   Copy,
-  CheckCheck
+  CheckCheck,
+  AlertCircle
 } from 'lucide-react'
 import { useChatStore, type ChatMessage } from '@/store/chatStore'
+import apiClient from '@/lib/api'
 
 const suggestedPrompts = [
   { icon: FileText, text: 'Help me improve my CV' },
@@ -78,8 +78,7 @@ const MessageBubble = ({ message }: { message: ChatMessage }) => {
 }
 
 export default function ChatPage() {
-  const { user } = useUser()
-  const { messages, setMessages, loading, setLoading } = useChatStore()
+  const { messages, setMessages, loading, setLoading, setCurrentSession, currentSessionId, setError, error } = useChatStore()
   const [input, setInput] = useState('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -99,35 +98,38 @@ export default function ChatPage() {
       id: Date.now().toString(),
       role: 'user',
       content: text,
-      timestamp: new Date()
+      timestamp: new Date(),
     }
 
-    setMessages([...messages, userMessage])
+    const messagesAtSend = [...messages, userMessage]
+    setMessages(messagesAtSend)
     setInput('')
     setLoading(true)
+    setError(null)
 
-    // Capture current messages before async operation
-    const messagesAtSend = [...messages, userMessage]
-
-    // Mock AI response
-    setTimeout(() => {
-      const responses = [
-        "Based on your CV, I can see you have strong skills in React and Python. Here are some recommendations to strengthen your profile:\n\n1. Add more quantifiable achievements to your experience section\n2. Consider learning TypeScript to complement your JavaScript skills\n3. Build a portfolio project showcasing your best work\n\nWould you like me to help with any of these?",
-        "Great question! For your target role as a Full Stack Developer, I'd recommend focusing on:\n\n- Docker & Kubernetes for deployment\n- GraphQL APIs\n- Testing best practices\n\nI've created a learning roadmap for you. Want to see it?",
-        "I can help you generate a cover letter for that position. To make it personalized, could you share the job description? Or would you like me to use your existing CV data to create a generic template first?"
-      ]
-
+    try {
+      const res = await apiClient.post('/api/chat', {
+        message: text,
+        session_id: currentSessionId,
+      })
+      
+      setCurrentSession(res.data.session_id)
+      
       const aiMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: responses[Math.floor(Math.random() * responses.length)],
+        content: res.data.response,
         timestamp: new Date(),
-        suggestedActions: ['Yes, help me', 'Show me more', 'Skip']
+        suggestedActions: res.data.suggested_actions,
+        sources: res.data.sources,
       }
-
       setMessages([...messagesAtSend, aiMessage])
+    } catch (err: any) {
+      setError(err.message || 'Failed to get AI response')
+      setMessages(messagesAtSend)
+    } finally {
       setLoading(false)
-    }, 1500)
+    }
   }
 
   return (
@@ -145,7 +147,7 @@ export default function ChatPage() {
             </div>
           </div>
           <Link 
-            href="/dashboard"
+            href="/"
             className="text-sm font-medium text-slate-600 hover:text-slate-900"
           >
             Back to Dashboard
@@ -156,6 +158,12 @@ export default function ChatPage() {
       {/* Chat area */}
       <div className="flex-1 overflow-auto">
         <div className="max-w-4xl mx-auto p-6">
+          {error && (
+            <div className="mb-4 flex items-start gap-2 bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded-lg text-sm">
+              <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
           {messages.length === 0 && (
             <div className="text-center py-12">
               <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
@@ -209,7 +217,8 @@ export default function ChatPage() {
               placeholder="Ask me anything about your career..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              className="flex-1 px-6 py-4 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              disabled={loading}
+              className="flex-1 px-6 py-4 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:opacity-50"
             />
             <button
               type="submit"
