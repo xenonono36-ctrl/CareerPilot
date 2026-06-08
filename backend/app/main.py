@@ -51,6 +51,7 @@ app = FastAPI(
 #   FRONTEND_URLS=https://careerpilot-custom.com,https://staging.example.com
 
 
+
 _default_origins = (
     
     "http://localhost:3000,"
