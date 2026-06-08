@@ -53,6 +53,7 @@ _default_origins = (
     "http://localhost:3000,"
     "https://careerpilot.vercel.app"
     
+    
 )
 _raw_origins = settings.frontend_url or _default_origins
 _allowed_origins = [o.strip() for o in _raw_origins.split(",") if o.strip()]
