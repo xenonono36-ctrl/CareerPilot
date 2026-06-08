@@ -1,7 +1,6 @@
 {
-  "devDependencies": {
-    "autoprefixer": "^10.5.0",
-    "postcss": "^8.5.15",
-    "tailwindcss": "^4.3.0"
-  }
+  "name": "careerpilot-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Monorepo root. Vercel must be configured with Root Directory = 'frontend' to deploy the Next.js app. The FastAPI backend in backend/ is deployed separately to Railway."
 }
