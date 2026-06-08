@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 
 from app.core.database import get_db
+from app.core.auth import get_current_clerk_id
 from app.models import Task, User
 from app.schemas import TaskCreate, TaskUpdate, TaskResponse, TaskListResponse
 

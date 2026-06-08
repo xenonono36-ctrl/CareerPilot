@@ -3,6 +3,7 @@ import { ClerkProvider } from '@clerk/nextjs'
 import { Toaster } from 'sonner'
 import Link from 'next/link'
 import { Compass } from 'lucide-react'
+import ApiClientBootstrap from '@/components/providers/ApiClientBootstrap'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -17,6 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider>
+      <ApiClientBootstrap />
       <html lang="en" className="scroll-smooth" style={{ fontSize: '18px' }}>
         <head>
           {/* Bebas Neue Font */}

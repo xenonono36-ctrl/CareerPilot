@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from app.core.database import get_db
+from app.core.auth import get_current_clerk_id
 from app.models import CV, User
 from app.schemas import (
     JobSearchRequest, JobSearchResponse, FitScoreResponse,

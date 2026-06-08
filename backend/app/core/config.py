@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     clerk_publishable_key: str = ""
     clerk_secret_key: str = ""
     clerk_verify_token: str = ""
+    clerk_jwt_issuer: str = "https://clerk.dev"
 
     # JSearch API
     jsearch_api_key: str = ""

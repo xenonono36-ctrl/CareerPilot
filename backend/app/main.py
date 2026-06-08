@@ -32,13 +32,16 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS middleware
+# CORS middleware — env-driven allow-list (comma-separated origins)
+_default_origins = "http://localhost:3000,https://careerpilot.vercel.app"
+_allowed_origins = [
+    o.strip()
+    for o in (settings.frontend_url or _default_origins).split(",")
+    if o.strip()
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "https://careerpilot.vercel.app",
-    ],
+    allow_origins=_allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

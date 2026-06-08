@@ -11,6 +11,7 @@ from sqlalchemy import select
 
 from app.core.database import get_db
 from app.core.config import settings
+from app.core.auth import get_current_clerk_id
 from app.models import CV, User
 from app.schemas import CVUploadResponse, CVStatusResponse
 from app.services import cv_parser, embedding_service
@@ -43,7 +44,7 @@ async def get_or_create_user(db: AsyncSession, clerk_id: str) -> User:
 @router.post("/upload", response_model=CVUploadResponse)
 async def upload_cv(
     file: UploadFile = File(...),
-    clerk_id: str = "demo_user",  # In production, get from auth header
+    clerk_id: str = Depends(get_current_clerk_id),  # In production, get from auth header
     db: AsyncSession = Depends(get_db),
 ):
     """

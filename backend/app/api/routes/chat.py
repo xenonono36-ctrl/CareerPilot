@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
 
 from app.core.database import get_db
+from app.core.auth import get_current_clerk_id
 from app.models import CV, User, ChatSession
 from app.schemas import ChatRequest, ChatResponse, ChatMessage
 from app.services import chat_service, embedding_service
