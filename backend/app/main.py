@@ -50,6 +50,7 @@ app = FastAPI(
 #   FRONTEND_URL=http://localhost:3000,https://careerpilot.vercel.app
 #   FRONTEND_URLS=https://careerpilot-custom.com,https://staging.example.com
 
+
 _default_origins = (
     
     "http://localhost:3000,"
